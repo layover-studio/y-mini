@@ -1,6 +1,8 @@
 // zod type to ydoc schema https://github.com/colinhacks/zod/discussions/2134
 // https://docs.yjs.dev/api/shared-types
 
+// encryption https://discuss.yjs.dev/t/end-to-end-encryption-with-schema-validation/2263
+
 import * as Y from 'yjs';
 import { IndexeddbPersistence } from 'y-indexeddb'
 import { z } from "zod";
