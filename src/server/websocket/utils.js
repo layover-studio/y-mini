@@ -1,7 +1,8 @@
 import * as Y from 'yjs'
 import * as syncProtocol from 'y-protocols/sync.js'
 import * as awarenessProtocol from 'y-protocols/awareness.js'
-import { LeveldbPersistence } from 'y-leveldb'
+
+import { getConnection } from './ldb-pool.js'
 
 import * as encoding from 'lib0/encoding'
 import * as decoding from 'lib0/decoding'
@@ -25,54 +26,44 @@ const persistenceDir = process.env.YPERSISTENCE
 /**
  * @type {{bindState: function(string,WSSharedDoc):void, writeState:function(string,WSSharedDoc):Promise<any>, provider: any}|null}
  */
-let persistence = null
-if (typeof persistenceDir === 'string') {
-  console.info('Persisting documents to "' + persistenceDir + '"')
-  // @ts-ignore
-  const ldb = new LeveldbPersistence(persistenceDir)
-  persistence = {
-    provider: ldb,
+let persistence = {
+    // provider: ldb,
     bindState: async (docName, ydoc) => {
+      console.info('Persisting documents to "' + `./db/${docName}` + '"')
+      
+      const ldb = getConnection(docName)
+
       const persistedYdoc = await ldb.getYDoc(docName)
+
       const newUpdates = Y.encodeStateAsUpdate(ydoc)
+
       ldb.storeUpdate(docName, newUpdates)
+
       Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc))
-      ydoc.on('update', update => {
+      
+      ydoc.on('update', async (update) => {
+        const ldb = getConnection(docName)
+
+        // Y.logUpdate(update)
+
         ldb.storeUpdate(docName, update)
       })
     },
     writeState: async (docName, ydoc) => {}
   }
-}
 
-/**
- * @param {{bindState: function(string,WSSharedDoc):void,
- * writeState:function(string,WSSharedDoc):Promise<any>,provider:any}|null} persistence_
- */
 export const setPersistence = persistence_ => {
   persistence = persistence_
 }
 
-/**
- * @return {null|{bindState: function(string,WSSharedDoc):void,
-  * writeState:function(string,WSSharedDoc):Promise<any>}|null} used persistence layer
-  */
 export const getPersistence = () => persistence
 
-/**
- * @type {Map<string,WSSharedDoc>}
- */
 export const docs = new Map()
 
 const messageSync = 0
 const messageAwareness = 1
 // const messageAuth = 2
 
-/**
- * @param {Uint8Array} update
- * @param {any} origin
- * @param {WSSharedDoc} doc
- */
 const updateHandler = (update, origin, doc) => {
   const encoder = encoding.createEncoder()
   encoding.writeVarUint(encoder, messageSync)
@@ -82,9 +73,7 @@ const updateHandler = (update, origin, doc) => {
 }
 
 class WSSharedDoc extends Y.Doc {
-  /**
-   * @param {string} name
-   */
+  
   constructor (name) {
     super({ gc: gcEnabled })
     this.name = name
@@ -149,11 +138,6 @@ export const getYDoc = (docname, gc = true) => map.setIfUndefined(docs, docname,
   return doc
 })
 
-/**
- * @param {any} conn
- * @param {WSSharedDoc} doc
- * @param {Uint8Array} message
- */
 const messageListener = (conn, doc, message) => {
   try {
     const encoder = encoding.createEncoder()
@@ -183,21 +167,12 @@ const messageListener = (conn, doc, message) => {
   }
 }
 
-/**
- * @param {WSSharedDoc} doc
- * @param {any} conn
- */
 const closeConn = (doc, conn) => {
   if (doc.conns.has(conn)) {
-    /**
-     * @type {Set<number>}
-     */
-    // @ts-ignore
     const controlledIds = doc.conns.get(conn)
     doc.conns.delete(conn)
     awarenessProtocol.removeAwarenessStates(doc.awareness, Array.from(controlledIds), null)
     if (doc.conns.size === 0 && persistence !== null) {
-      // if persisted, we store state and destroy ydocument
       persistence.writeState(doc.name, doc).then(() => {
         doc.destroy()
       })
@@ -207,11 +182,6 @@ const closeConn = (doc, conn) => {
   conn.close()
 }
 
-/**
- * @param {WSSharedDoc} doc
- * @param {any} conn
- * @param {Uint8Array} m
- */
 const send = (doc, conn, m) => {
   if (conn.readyState !== wsReadyStateConnecting && conn.readyState !== wsReadyStateOpen) {
     closeConn(doc, conn)
@@ -225,11 +195,6 @@ const send = (doc, conn, m) => {
 
 const pingTimeout = 30000
 
-/**
- * @param {any} conn
- * @param {any} req
- * @param {any} opts
- */
 export const setupWSConnection = (conn, req, { docName = req.url.slice(1).split('?')[0], gc = true } = {}) => {
   conn.binaryType = 'arraybuffer'
   // get doc, initialize if it does not exist yet

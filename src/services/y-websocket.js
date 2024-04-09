@@ -12,7 +12,7 @@ import * as decoding from 'lib0/decoding'
 import * as syncProtocol from 'y-protocols/sync'
 import * as authProtocol from 'y-protocols/auth'
 import * as awarenessProtocol from 'y-protocols/awareness'
-import { Observable } from 'lib0/observable'
+import { ObservableV2 } from 'lib0/observable'
 import * as math from 'lib0/math'
 import * as url from 'lib0/url'
 import * as env from 'lib0/environment'
@@ -237,7 +237,7 @@ const broadcastMessage = (provider, buf) => {
  *
  * @extends {Observable<string>}
  */
-export class WebsocketProvider extends Observable {
+export class WebsocketProvider extends ObservableV2 {
   /**
    * @param {string} serverUrl
    * @param {string} roomname
