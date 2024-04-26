@@ -1,7 +1,8 @@
-import { Level } from 'level'
+// import level from 'level'
+// const { Level } = level
 
-export function open(name){
-    return new Level(name, { 
-        valueEncoding: 'json'
-    })
-}
+// export function open(name){
+//     return new Level(name, { 
+//         valueEncoding: 'json'
+//     })
+// }

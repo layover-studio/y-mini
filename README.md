@@ -1,1 +1,7 @@
-The web framework to launch fast and relax.
+# Build. Lay back. Relax.
+
+## The yjs framework for distributed web development.
+
+## Install
+
+## Documentation
