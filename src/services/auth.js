@@ -6,26 +6,6 @@ import * as EncryptService from "./encrypt.js";
 import User from "../models/user.js";
 import Session from "../models/session.js";
 
-export function isLoggedIn() {
-  let session = localStorage.getItem('session');
-
-  // console.log(session)
-
-  if(!session){
-    return false
-  }
-
-  session = JSON.parse(session);
-
-  return session
-}
-
-export function getUser(){
-  let session = localStorage.getItem('session');
-  session = JSON.parse(session);
-  return session.user
-}
-
 export async function create({ email, password, org }) {
 	
 	const uid = uuidv4();

@@ -1,6 +1,4 @@
 import { 
-    isLoggedIn, 
-    getUser,
     create,
     findOneByEmail,
     checkPassword,
@@ -10,8 +8,6 @@ import {
 } from "./src/services/auth.js";
 
 export { 
-    isLoggedIn, 
-    getUser,
     create,
     findOneByEmail,
     checkPassword,
@@ -21,8 +17,6 @@ export {
 };
 
 export default {
-    isLoggedIn, 
-    getUser,
     create,
     findOneByEmail,
     checkPassword,

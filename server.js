@@ -1,9 +1,7 @@
-import { WebSocketServer } from 'ws'
-import { setupWSConnection } from './src/server/websocket/utils.js'
+import { LaybackServer } from './src/server/index.js'
 
-export { setupWSConnection, WebSocketServer }
+export { LaybackServer }
 
 export default {
-    setupWSConnection,
-    WebSocketServer
+    LaybackServer
 };

@@ -14,9 +14,12 @@
     "./model": "./model.js",
     "./provider": "./provider.js",
     "./auth": "./auth.js",
-    "./server": "./server.js"
+    "./server": "./server.js",
+    "./opfs": "./opfs.js"
   },
   "dependencies": {
+    "@hono/node-server": "^1.11.1",
+    "hono": "^4.3.2",
     "lib0": "^0.2.93",
     "lodash.debounce": "^4.0.8",
     "throttle-debounce": "^5.0.0",
