@@ -14,6 +14,7 @@ const SharedDoc = new Proxy(Y.Doc, {
 
         const ydoc = doc ? doc : new Y.Doc()
 
+        ydoc.schema = schema
         ydoc.properties = parseKeys(schema)
         
         const res = new Proxy(ydoc, {
@@ -37,6 +38,12 @@ const SharedDoc = new Proxy(Y.Doc, {
             },
             set: function(target, prop, value, receiver) {
                 if(target.properties.includes(prop)){
+                    const { shape } = target.schema
+
+                    if(!shape[prop] || !shape[prop].safeParse(value).success){
+                        throw new Error(`Invalid value for property ${prop}`)
+                    }
+
                     target.getMap("root").set(prop, value)
                     return true
                 }
