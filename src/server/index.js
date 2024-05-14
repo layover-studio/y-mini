@@ -87,39 +87,37 @@ server.use(async (ctx, next) => {
 // server.route('/', AuthController)
 // server.route('/webhook/payment', PaymentWebhookController)
 
-export class LaybackServer {
-    constructor({ port = 47400 } = {}) {
-        this.port = port
-    }
+const LaybackServer = new Proxy(server, {})
 
-    async start() {
-        const app = serve({
-            fetch: server.fetch,
-            port: this.port,
-        }, (info) => {
-            console.log(`Listening on http://localhost:${info.port}`);
-        })
+LaybackServer.start = async function({ port } = {}) {
+    const app = serve({
+        fetch: LaybackServer.fetch,
+        port: port,
+    }, (info) => {
+        console.log(`Listening on http://localhost:${info.port}`);
+    })
+    
+    const wss = new WebSocketServer({ noServer: true })
+    
+    wss.on('connection', setupWSConnection)
+    
+    app.on('upgrade', (request, socket, head) => {    
+        const handleAuth = ws => {
+            // console.log(request.url)
+    
+            // if (err || !client) {
+            //     socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+            //     socket.destroy();
+            //     return;
+            // }
         
-        const wss = new WebSocketServer({ noServer: true })
-        
-        wss.on('connection', setupWSConnection)
-        
-        app.on('upgrade', (request, socket, head) => {    
-            const handleAuth = ws => {
-                // console.log(request.url)
-        
-                // if (err || !client) {
-                //     socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
-                //     socket.destroy();
-                //     return;
-                // }
-          
-                // socket.removeListener('error', onSocketError);
-        
-                wss.emit('connection', ws, request)
-            }
-          
-            wss.handleUpgrade(request, socket, head, handleAuth)
-        })
-    }
+            // socket.removeListener('error', onSocketError);
+    
+            wss.emit('connection', ws, request)
+        }
+    
+        wss.handleUpgrade(request, socket, head, handleAuth)
+    })
 }
+
+export default LaybackServer

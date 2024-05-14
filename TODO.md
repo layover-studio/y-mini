@@ -1,4 +1,3 @@
-- [ ] use proxy instead of class to expose the original server object
 - [ ] schema - add automated parsing on set
 - [ ] should be able to local sync in NodeJS
 - [ ] write shareddoc tests
@@ -8,6 +7,7 @@
 - [ ] add proxy API endpoint
 - [ ] proxy - add whitelisting support
 - [ ] add SharedText class
+- [X] use proxy instead of class to expose the original server object
 - [X] add helper function to sign up user like Supabase
 - [X] add helper function to log in user like Supabase
 - [X] add helper function to logout user like Supabase
