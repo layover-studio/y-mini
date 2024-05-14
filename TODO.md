@@ -1,15 +1,15 @@
-- rewrite shared doc API to abstract away the sync method
-- encodeStateAsUpdate and applyUpdate methods
-- should be able to local sync in NodeJS
-- write shareddoc tests
-- add SharedText class
-- schema - add automated parsing on set
-- add helper function to sign up user like Supabase
-- add helper function to log in user like Supabase
-- add JWT authentication
-- add helper function to logout user like Supabase
-- add authorization middleware
-- use proxy instead of class to expose the original server object
-- add proxy API endpoint
-- proxy - add whitelisting support
-- publish npm package
+- [ ] use proxy instead of class to expose the original server object
+- [ ] schema - add automated parsing on set
+- [ ] should be able to local sync in NodeJS
+- [ ] write shareddoc tests
+- [ ] add JWT authentication
+- [ ] add authorization middleware
+- [ ] publish npm package
+- [ ] add proxy API endpoint
+- [ ] proxy - add whitelisting support
+- [ ] add SharedText class
+- [X] add helper function to sign up user like Supabase
+- [X] add helper function to log in user like Supabase
+- [X] add helper function to logout user like Supabase
+- [X] encodeStateAsUpdate and applyUpdate methods
+- [X] ~~rewrite shared doc API to abstract away the sync method~~
