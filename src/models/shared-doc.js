@@ -5,6 +5,9 @@ import SharedObject from './shared-object.js'
 
 import { parseKeys } from "../services/zod.js"
 
+import { WebsocketProvider } from "../services/y-websocket.js"
+import OpfsPersistence from '../services/opfs-provider.js';
+
 const SharedDoc = new Proxy(Y.Doc, {
     construct: function(target, args) {
         let { schema = false, doc = false, ...params } = args[0]
@@ -58,6 +61,42 @@ const SharedDoc = new Proxy(Y.Doc, {
 
         res.applyUpdate = function(update){
             Y.applyUpdate(res, update)
+        }
+
+        res.sync = async function({ remote = false } = {}, callback) {
+            const provider = new OpfsPersistence(res.uid, res)
+
+            provider.on('synced', () => {
+                callback()
+
+                res.getMap('root').observeDeep((e) => {
+                    callback()
+                })
+            })
+
+            await provider.sync()
+
+            if(remote){
+                const wsProvider = new WebsocketProvider(
+                    `ws://${import.meta.env.PUBLIC_BACKEND_HOSTNAME}`, res.uid, 
+                    res, 
+                    {
+                        params: {
+                        // "Authorization": `Bearer ${session.uid}`
+                        }
+                    }
+                )
+
+                wsProvider.shouldConnect = false
+            
+                wsProvider.on('sync', event => {
+                    callback()
+            
+                    res.getMap('root').observe((e) => {
+                        callback()
+                    });
+                })
+            }
         }
 
         return res
