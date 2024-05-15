@@ -5,7 +5,7 @@ import { cors } from 'hono/cors'
 import { WebSocketServer } from 'ws'
 import { setupWSConnection } from './websocket/utils.js'
 
-// import AuthController from './controllers/auth.js'
+import AuthController from './controllers/auth.js'
 // import PaymentWebhookController from './controllers/webhook/payment.js'
 
 const server = new Hono()
@@ -84,7 +84,7 @@ server.use(async (ctx, next) => {
 //     await next()
 // })
 
-// server.route('/', AuthController)
+server.route('/', AuthController)
 // server.route('/webhook/payment', PaymentWebhookController)
 
 const LaybackServer = new Proxy(server, {})
@@ -104,6 +104,18 @@ LaybackServer.start = async function({ port } = {}) {
     app.on('upgrade', (request, socket, head) => {    
         const handleAuth = ws => {
             // console.log(request.url)
+
+            // TODO: get session token from request url
+            // 	const sessionId = authorizationHeader.split(" ")[1];
+            //     const session = await AuthService.findSession(sessionId);
+
+            //     if (session.isExpired()) {
+            //         const err = new Error("Forbidden");
+            //         err.status = 403;
+            //         throw err;
+            //     }
+
+            // TODO: check the user is allowed to connect to the document 
     
             // if (err || !client) {
             //     socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');

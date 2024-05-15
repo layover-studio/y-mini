@@ -6,10 +6,13 @@ import SharedObject from './shared-object.js'
 import { parseKeys } from "../services/zod.js"
 
 import { WebsocketProvider } from "../services/y-websocket.js"
+import { LeveldbPersistence } from 'y-leveldb'
 import OpfsPersistence from '../services/opfs-provider.js';
 
 const SharedDoc = new Proxy(Y.Doc, {
     construct: function(target, args) {
+        if(!args[0]) args[0] = {}
+        
         let { schema = false, doc = false, ...params } = args[0]
 
         const ydoc = doc ? doc : new Y.Doc()
@@ -38,10 +41,12 @@ const SharedDoc = new Proxy(Y.Doc, {
             },
             set: function(target, prop, value, receiver) {
                 if(target.properties.includes(prop)){
-                    const { shape } = target.schema
-
-                    if(!shape[prop] || !shape[prop].safeParse(value).success){
-                        throw new Error(`Invalid value for property ${prop}`)
+                    if(target.schema) {
+                        const { shape } = target.schema
+    
+                        if(!shape[prop] || !shape[prop].safeParse(value).success){
+                            throw new Error(`Invalid value for property ${prop}`)
+                        }
                     }
 
                     target.getMap("root").set(prop, value)
@@ -71,6 +76,7 @@ const SharedDoc = new Proxy(Y.Doc, {
         }
 
         res.sync = async function({ remote = false } = {}, callback) {
+            // const provider = typeof navigator === 'undefined' ? new OpfsPersistence(res.uid, res) : new LeveldbPersistence(`./db/${res.uid}`)
             const provider = new OpfsPersistence(res.uid, res)
 
             provider.on('synced', () => {
@@ -82,6 +88,8 @@ const SharedDoc = new Proxy(Y.Doc, {
             })
 
             await provider.sync()
+
+            // TODO: for NodeJS sync, need to get latest update from leveldb provider
 
             if(remote){
                 const wsProvider = new WebsocketProvider(
@@ -104,6 +112,8 @@ const SharedDoc = new Proxy(Y.Doc, {
                     });
                 })
             }
+
+            return true
         }
 
         return res
