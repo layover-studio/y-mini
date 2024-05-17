@@ -112,6 +112,7 @@ LaybackServer.start = async function({ port } = {}) {
             // console.log(request.url)
 
             // TODO: get session token from request url
+            
             // 	const sessionId = authorizationHeader.split(" ")[1];
             //     const session = await AuthService.findSession(sessionId);
 

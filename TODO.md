@@ -1,9 +1,9 @@
-- [ ] add JWT authentication
-- [ ] add authorization middleware
 - [ ] publish npm package
 - [ ] add proxy API endpoint
 - [ ] proxy - add whitelisting support
 - [ ] add SharedText class
+- [ ] add JWT authentication
+- [ ] add authorization middleware
 - [ ] should be able to local sync in NodeJS
 - [X] ~~write shareddoc tests~~
 - [X] ~~schema - add automated parsing on set~~

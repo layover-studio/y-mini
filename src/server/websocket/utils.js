@@ -46,6 +46,8 @@ let persistence = {
 
         // Y.logUpdate(update)
 
+        // TODO: check if permission is granted
+
         ldb.storeUpdate(docName, update)
       })
     },
