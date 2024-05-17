@@ -1,7 +1,3 @@
-import { LaybackServer } from './src/server/index.js'
+import LaybackServer from './src/server/index.js'
 
-export { LaybackServer }
-
-export default {
-    LaybackServer
-};
+export default LaybackServer

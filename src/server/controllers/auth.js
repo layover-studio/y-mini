@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 const app = new Hono()
 
-import * as AuthService from "../services/auth.js";
+import * as AuthService from "../../services/auth.js";
 
 app.post('/signup', async ctx => {
     const { email, password, org } = await ctx.req.json()

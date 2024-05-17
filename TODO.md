@@ -5,7 +5,7 @@
 - [ ] proxy - add whitelisting support
 - [ ] add SharedText class
 - [ ] should be able to local sync in NodeJS
-- [X] write shareddoc tests
+- [X] ~~write shareddoc tests~~
 - [X] ~~schema - add automated parsing on set~~
 - [X] ~~use proxy instead of class to expose the original server object~~
 - [X] ~~add helper function to sign up user like Supabase~~
