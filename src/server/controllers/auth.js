@@ -45,6 +45,32 @@ app.post('/login', async ctx => {
     }, 200)
 })
 
+app.use(async (ctx, next) => {
+    const authorizationHeader = ctx.req.header("Authorization");
+
+	if (!authorizationHeader) {
+		const err = new Error("Unauthorized");
+		err.status = 401;
+		throw err;
+	}
+
+	const sessionId = authorizationHeader.split(" ")[1];
+
+    const session = await AuthService.findSession(sessionId);
+
+    if (session.isExpired()) {
+        const err = new Error("Forbidden");
+        err.status = 403;
+        throw err;
+    }
+
+    ctx.data = {
+        session
+    };
+
+    await next()
+})
+
 app.post('/logout', async ctx => {
     const session = ctx.data.session
 

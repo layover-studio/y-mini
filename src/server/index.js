@@ -26,6 +26,12 @@ server.use(async (ctx, next) => {
 	}
 })
 
+server.get('/test', async (ctx) => {
+    return ctx.json({
+        ok: true
+    })
+})
+
 // server.post('/sync/:uid', async (ctx) => {
 //     let update = await ctx.req.arrayBuffer()
 //     update = new Uint8Array(update)
