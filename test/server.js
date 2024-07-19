@@ -3,6 +3,10 @@ import assert from "node:assert"
 
 import LaybackServer from "../src/server/index.js"
 
+// - [ ] Create a server
+// - [ ] Extend API
+// - [ ] Customize websocket hook
+
 const server = LaybackServer
 
 test("server", async () => {

@@ -1,7 +1,11 @@
 import test from "node:test"
 import assert from "node:assert"
 
-import SharedDoc from "../src/models/shared-doc.js"
+import SharedDoc from "../src/server/models/shared-doc.js"
+
+// [ ] Create doc
+// [ ] Local sync
+// [ ] Remote sync
 
 test("doc", async () => {
     const doc = new SharedDoc()

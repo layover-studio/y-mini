@@ -1,4 +1,3 @@
-- [ ] publish npm package
 - [ ] add proxy API endpoint
 - [ ] proxy - add whitelisting support
 - [ ] add SharedText class
