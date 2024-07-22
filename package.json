@@ -10,12 +10,8 @@
   "author": "",
   "license": "ISC",
   "exports": {
-    ".": "./index.js",
-    "./model": "./model.js",
-    "./provider": "./provider.js",
-    "./auth": "./auth.js",
     "./server": "./server.js",
-    "./opfs": "./opfs.js"
+    "./client": "./client.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.11.1",
