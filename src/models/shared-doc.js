@@ -36,6 +36,8 @@ const SharedDoc = new Proxy(Y.Doc, {
                 return Reflect.get(target, prop, receiver);
             },
             set: function(target, prop, value, receiver) {
+                // console.log(target.properties, prop)
+
                 if(target.properties.includes(prop)){
                     if(target.schema) {
                         const { shape } = target.schema

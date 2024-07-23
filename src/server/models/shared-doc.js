@@ -8,16 +8,19 @@ const SharedDoc = new Proxy(ParentDoc, {
 
         res.sync = async function({ remote = false } = {}, callback) {
             const provider = new LeveldbPersistence(`./db/${res.uid}`)
+            // res = await provider.getYDoc(res.uid)
 
-            provider.on('synced', () => {
-                callback()
+            // console.log(provider)
 
-                res.getMap('root').observeDeep((e) => {
-                    callback()
-                })
-            })
+            // provider.on('synced', () => {
+            //     callback()
 
-            await provider.sync()
+            //     res.getMap('root').observeDeep((e) => {
+            //         callback()
+            //     })
+            // })
+
+            // await provider.sync()
 
             // if(remote){
             //     const wsProvider = new WebsocketProvider(
