@@ -108,27 +108,32 @@ LaybackServer.start = async function({ port } = {}) {
     wss.on('connection', setupWSConnection)
     
     app.on('upgrade', (request, socket, head) => {    
-        const handleAuth = ws => {
-            // console.log(request.url)
+        const handleAuth = async (ws) => {
+            console.log(request.url)
 
-            // TODO: get session token from request url
+            const url = new URL(`http://localhost:8000${request.url}`)
+
+            const sessionId = url.searchParams.get('token')
+
+            if (!sessionId) {
+                console.log("Unauthorized")
+                socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+                socket.destroy();
+                return;
+            }
+
+            const session = await AuthService.findSession(sessionId);
+
+            if (session.isExpired()) {
+                console.log("Unauthorized")
+                socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+                socket.destroy();
+                return;
+            }
+
+            // TODO: check the user is allowed to connect to the document
+
             
-            // 	const sessionId = authorizationHeader.split(" ")[1];
-            //     const session = await AuthService.findSession(sessionId);
-
-            //     if (session.isExpired()) {
-            //         const err = new Error("Forbidden");
-            //         err.status = 403;
-            //         throw err;
-            //     }
-
-            // TODO: check the user is allowed to connect to the document 
-    
-            // if (err || !client) {
-            //     socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
-            //     socket.destroy();
-            //     return;
-            // }
         
             // socket.removeListener('error', onSocketError);
     
