@@ -66,13 +66,13 @@ class SharedObject extends Y.Map {
             },
             set: function(target, prop, value, receiver) {
                 if(target.props.includes(prop)){
-                    if(target.schema) {
-                        const { shape } = target.schema
+                    // if(target.schema) {
+                    //     const { shape } = target.schema
         
-                        if(!shape[prop] || !shape[prop].safeParse(value).success){
-                            throw new Error(`Invalid value for property ${prop}`)
-                        }
-                    }
+                    //     if(!shape[prop] || !shape[prop].safeParse(value).success){
+                    //         throw new Error(`Invalid value for property ${prop}`)
+                    //     }
+                    // }
 
                     target.set(prop, value)
                     
