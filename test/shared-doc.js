@@ -17,50 +17,50 @@ test("create doc", async () => {
     assert(doc.username == "test")
 })
 
-// test("extended class", async () => {
-//     const schema = z.object({
-//         username: z.string(),
-//     })
+test("extended class", async () => {
+    const schema = z.object({
+        username: z.string(),
+    })
 
-//     class Animation extends SharedDoc {
-//         constructor () {
-//             super(schema)
-//         }
-//     }
+    class Animation extends SharedDoc {
+        constructor () {
+            super(schema)
+        }
+    }
 
-//     const animation = new Animation()
+    const animation = new Animation()
 
-//     animation.username = "test"
+    animation.username = "test"
 
-//     assert(animation.username == "test")
-// })
+    assert(animation.username == "test")
+})
 
-// test("export doc", async () => {
-//     const doc = new SharedDoc(z.object({
-//         username: z.string(),
-//     }))
+test("export doc", async () => {
+    const doc = new SharedDoc(z.object({
+        username: z.string(),
+    }))
 
-//     doc.username = "test"
+    doc.username = "test"
 
-//     const state = doc.export()
+    const state = doc.export()
 
-//     assert(state)
-// })
+    assert(state)
+})
 
-// test("import doc", async () => {
-//     const doc = new SharedDoc(z.object({
-//         username: z.string(),
-//     }))
+test("import doc", async () => {
+    const doc = new SharedDoc(z.object({
+        username: z.string(),
+    }))
 
-//     doc.username = "test"
+    doc.username = "test"
 
-//     const state = doc.export()
+    const state = doc.export()
 
-//     const doc2 = new SharedDoc(z.object({
-//         username: z.string(),
-//     }))
+    const doc2 = new SharedDoc(z.object({
+        username: z.string(),
+    }))
 
-//     doc2.import(state)
+    doc2.import(state)
 
-//     assert(JSON.stringify(doc2.toJSON()) == JSON.stringify(doc.toJSON()))
-// })
+    assert(JSON.stringify(doc2.toJSON()) == JSON.stringify(doc.toJSON()))
+})

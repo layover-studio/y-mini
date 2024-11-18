@@ -4,22 +4,27 @@ import SharedArray from './shared-array.js'
 
 import { parseKeys } from "../services/zod.js"
 
-class SharedObject extends Y.Map {
+class SharedObject {
     constructor (schema) {
-        super()
+        this.object = new Y.Map()
+        this.schema = false 
+        this.props = []
 
-        this.schema = schema
-        this.props = parseKeys(schema)
+        if(schema){
+            this.schema = schema
+            this.props = parseKeys(schema)
+        }
 
         return new Proxy(this, {
             get: function(target, prop, receiver) {
                 if(target.props.includes(prop)){
-                    const res = target.get(prop)
+                    const res = target.object.get(prop)
                     
                     if(res instanceof Y.Array){
-                        return SharedArray.from(res)
+                        return SharedArray.from(res, target.schema.shape[prop])
                     } else if(res instanceof Y.Map){
-                        return SharedObject.from(res)
+                        // console.log(target)
+                        return SharedObject.from(res, target.schema.shape[prop])
                     }
         
                     return res
@@ -29,6 +34,7 @@ class SharedObject extends Y.Map {
             },
             set: function(target, prop, value, receiver) {
                 if(target.props.includes(prop)){
+                // if(!['object', 'props', 'schema', 'from'].includes(prop)){
                     // if(target.schema) {
                     //     const { shape } = target.schema
         
@@ -37,8 +43,17 @@ class SharedObject extends Y.Map {
                     //     }
                     // }
 
-                    target.set(prop, value)
-                    
+                    if(value instanceof SharedArray){
+                        target.object.set(prop, value.array)
+                        return true
+                    }
+
+                    if(value instanceof SharedObject){
+                        target.object.set(prop, value.object)
+                        return true
+                    }
+
+                    target.object.set(prop, value)
                     return true
                 }
 
@@ -47,47 +62,55 @@ class SharedObject extends Y.Map {
         })
     }
 
-    static from (ymap, schema = false) {
-        if(schema) {
-            ymap.schema = schema
-            ymap.props = parseKeys(schema)
-        }
+    // static from (ymap, schema = false) {
+    //     if(schema) {
+    //         ymap.schema = schema
+    //         ymap.props = parseKeys(schema)
+    //     }
 
-        return new Proxy(ymap, {
-            get: function(target, prop, receiver) {
-                if(target.props.includes(prop)){
-                    const res = target.get(prop)
+    //     return new Proxy(ymap, {
+    //         get: function(target, prop, receiver) {
+    //             if(target.props.includes(prop)){
+    //                 const res = target.get(prop)
                     
-                    if(res instanceof Y.Array){
-                        return SharedArray.from(res)
-                    } else if(res instanceof Y.Map){
-                        return SharedObject.from(res)
-                    }
+    //                 if(res instanceof Y.Array){
+    //                     return SharedArray.from(res)
+    //                 } else if(res instanceof Y.Map){
+    //                     return SharedObject.from(res)
+    //                 }
         
-                    return res
-                }
+    //                 return res
+    //             }
 
-                return Reflect.get(target, prop, receiver);
-            },
-            set: function(target, prop, value, receiver) {
+    //             return Reflect.get(target, prop, receiver);
+    //         },
+    //         set: function(target, prop, value, receiver) {
                 
-                if(target.props.includes(prop)){
-                    // if(target.schema) {
-                    //     const { shape } = target.schema
+    //             if(target.props.includes(prop)){
+    //                 // if(target.schema) {
+    //                 //     const { shape } = target.schema
         
-                    //     if(!shape[prop] || !shape[prop].safeParse(value).success){
-                    //         throw new Error(`Invalid value for property ${prop}`)
-                    //     }
-                    // }
+    //                 //     if(!shape[prop] || !shape[prop].safeParse(value).success){
+    //                 //         throw new Error(`Invalid value for property ${prop}`)
+    //                 //     }
+    //                 // }
 
-                    target.set(prop, value)
+    //                 target.set(prop, value)
                     
-                    return true
-                }
+    //                 return true
+    //             }
 
-                return Reflect.set(target, prop, value, receiver);
-            }
-        }) 
+    //             return Reflect.set(target, prop, value, receiver);
+    //         }
+    //     }) 
+    // }
+
+    static from (ymap, schema) {
+        const res = new SharedObject(schema)
+
+        res.object = ymap 
+
+        return res
     }
 }
 

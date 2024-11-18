@@ -20,11 +20,18 @@ test("create shared array", async () => {
     }))
 
     doc.username = "document"
-    doc.authors = new SharedArray()
+    doc.authors = new SharedArray(z.array(z.object({
+        name: z.string()
+    })))
+
+    // console.log(new SharedArray())
 
     author.name = "test"
 
-    doc.authors.push([author])
+    // console.log(author)
 
+    
+    doc.authors.push([author])
+    
     assert(doc.authors[0].name == "test")
 })

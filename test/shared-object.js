@@ -18,9 +18,11 @@ test("create object", async () => {
         name: z.string()
     }))
 
+    
     author.name = "bob dylan" 
-
+    
     doc.author = author
+    
     doc.title = "test"
 
     assert(doc.author.name == "bob dylan")

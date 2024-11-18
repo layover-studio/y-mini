@@ -5,16 +5,16 @@ export function parseKeys (schema) {
     // // console.log(z.instanceof(schema))
     // // console.log(Object.getPrototypeOf(schema))
     // // console.log(schema instanceof z.ZodObject)
-    // if (
-    //   schema instanceof z.ZodNullable ||
-    //   schema instanceof z.ZodOptional
-    // ) {
-    //     return parseKeys(schema.unwrap())
-    // }
+    if (
+      schema instanceof z.ZodNullable ||
+      schema instanceof z.ZodOptional
+    ) {
+        return parseKeys(schema.unwrap())
+    }
 
-    // if (schema instanceof z.ZodArray) {
-    //     return parseKeys(schema.element)
-    // }
+    if (schema instanceof z.ZodArray) {
+        return parseKeys(schema.element)
+    }
     
     // if (schema instanceof z.ZodObject) {
     //     const entries = Object.entries(schema.shape)

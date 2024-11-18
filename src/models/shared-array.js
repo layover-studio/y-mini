@@ -1,21 +1,45 @@
 import * as Y from 'yjs';
 
-class SharedArray extends Y.Array {
-    constructor(){
-        super()
+import SharedObject from "./shared-object.js"
+
+import { parseKeys } from "../services/zod.js"
+
+class SharedArray {
+    constructor(schema){
+        this.array = new Y.Array()
+        this.schema = schema
+        this.props = parseKeys(schema)
 
         return new Proxy(this, {
             get: function(target, prop, receiver) {
                 // console.log(prop.toString())
                 if(!isNaN(Number(prop.toString()))){
-                    return target.get(prop);
+                    const res = target.array.get(prop)
+                    
+                    if(res instanceof Y.Array){
+                        return SharedArray.from(res, target.schema)
+                    } else if(res instanceof Y.Map){
+                        return SharedObject.from(res, target.schema.element)
+                    }
+        
+                    return res
                 }
 
                 return Reflect.get(target, prop, receiver);
             },
             set: function(target, prop, value, receiver) {
                 if(!isNaN(Number(prop))){
-                    target.insert(prop, [value])
+                    let res = false 
+                    
+                    if(value instanceof SharedArray){
+                        res = value.array
+                    }
+        
+                    if(value instanceof SharedObject){
+                        res = value.object
+                    }
+
+                    target.array.insert(prop, [res])
                     return true
                 }
 
@@ -24,24 +48,28 @@ class SharedArray extends Y.Array {
         })
     }
 
-    static from (yarray) {
-        return new Proxy(yarray, {
-            get: function(target, prop, receiver) {
-                if(!isNaN(prop)){
-                    return target.get(prop);
-                }
+    static from (yarray, schema) {
+        const res = new SharedArray(schema)
 
-                return Reflect.get(target, prop, receiver);
-            },
-            set: function(target, prop, value, receiver) {
-                if(!isNaN(prop)){
-                    target.insert(prop, [value])
-                    return true
-                }
+        res.array = yarray 
 
-                return Reflect.set(target, prop, value, receiver);
+        return res
+    }
+
+    push(el) {
+        const array = el.map(l => {
+            if(l instanceof SharedArray){
+                return l.array
             }
+
+            if(l instanceof SharedObject){
+                return l.object
+            }
+
+            return l
         })
+
+        return this.array.push(array)
     }
 
     static fromArray (array) {

@@ -8,22 +8,21 @@ import SharedObject from "./shared-object.js"
 
 import { parseKeys } from "../services/zod.js"
 
-class SharedDoc extends Y.Doc {
-    constructor(schema){
-        super()
-        
+class SharedDoc {
+    constructor(schema){        
         this.schema = schema
         this.props = parseKeys(schema)
+        this.doc = new Y.Doc()
 
         return new Proxy(this, {
             get: function(target, prop, receiver) {
                 if(target.props.includes(prop)){
-                    const res = target.getMap("root").get(prop)
-        
+                    const res = target.doc.getMap("root").get(prop)
+                    
                     if(res instanceof Y.Array){
-                        return SharedArray.from(res)
+                        return SharedArray.from(res, target.schema.shape[prop])
                     } else if(res instanceof Y.Map){
-                        return SharedObject.from(res)
+                        return SharedObject.from(res, target.schema.shape[prop])
                     }
         
                     return res
@@ -46,9 +45,18 @@ class SharedDoc extends Y.Doc {
                     //         throw new Error(`Invalid value for property ${prop}`)
                     //     }
                     // }
-        
-                    target.getMap("root").set(prop, value)
 
+                    if(value instanceof SharedArray){
+                        target.doc.getMap("root").set(prop, value.array)
+                        return true
+                    }
+
+                    if(value instanceof SharedObject){
+                        target.doc.getMap("root").set(prop, value.object)
+                        return true
+                    }
+                    
+                    target.doc.getMap("root").set(prop, value)
                     return true
                 }
         
@@ -58,11 +66,11 @@ class SharedDoc extends Y.Doc {
     }
 
     export () {
-        return Y.encodeStateAsUpdate(this)
+        return Y.encodeStateAsUpdate(this.doc)
     }
 
     import (update) {
-        Y.applyUpdate(this, update)
+        Y.applyUpdate(this.doc, update)
 
         return true
     }
@@ -85,8 +93,12 @@ class SharedDoc extends Y.Doc {
         return jwtDecode(this.members).data
     }
 
+    transact(callback){
+        return this.doc.transact(callback)
+    }
+
     toJSON () {
-        return this.getMap('root').toJSON()
+        return this.doc.getMap('root').toJSON()
     }
 }
 
