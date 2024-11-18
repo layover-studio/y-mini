@@ -72,8 +72,20 @@ class SharedArray {
         return this.array.push(array)
     }
 
-    static fromArray (array) {
-        return SharedArray.from(Y.Array.from(array))
+    get length () {
+        return this.array.length
+    }
+
+    clone () {
+        return this.array.clone()
+    }
+
+    toJSON(){
+        return this.array.toJSON()
+    }
+
+    static fromArray (array, schema) {
+        return SharedArray.from(Y.Array.from(array), schema)
     }
 }
 

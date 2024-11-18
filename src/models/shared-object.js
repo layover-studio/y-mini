@@ -112,6 +112,14 @@ class SharedObject {
 
         return res
     }
+
+    clone () {
+        return this.object.clone()
+    }
+
+    toJSON(){
+        return this.object.toJSON()
+    }
 }
 
 // const SharedObject = new Proxy(Y.Map, {
