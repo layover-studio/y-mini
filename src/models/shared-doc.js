@@ -1,4 +1,7 @@
 import * as Y from 'yjs';
+import { z } from "zod";
+
+import { jwtDecode } from "jwt-decode";
 
 import SharedArray from "./shared-array.js"
 import SharedObject from "./shared-object.js"
@@ -8,7 +11,7 @@ import { parseKeys } from "../services/zod.js"
 class SharedDoc extends Y.Doc {
     constructor(schema){
         super()
-
+        
         this.schema = schema
         this.props = parseKeys(schema)
 
@@ -62,6 +65,24 @@ class SharedDoc extends Y.Doc {
         Y.applyUpdate(this, update)
 
         return true
+    }
+
+    addMember (args) {
+        this._prelim_acl.push([{ ...args, action: "add" }])
+    }
+
+    removeMember (user) {
+        this._prelim_acl.push([{ user: user.id, action: "remove" }])
+    }
+
+    hasRight(user, role){
+        const acl = jwtDecode(this.members).data
+
+        return acl.find(el => el.user == user.uuid && el.role == role)
+    }
+
+    getMembers(){
+        return jwtDecode(this.members).data
     }
 
     toJSON () {

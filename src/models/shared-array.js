@@ -6,14 +6,15 @@ class SharedArray extends Y.Array {
 
         return new Proxy(this, {
             get: function(target, prop, receiver) {
-                if(!isNaN(prop)){
+                // console.log(prop.toString())
+                if(!isNaN(Number(prop.toString()))){
                     return target.get(prop);
                 }
 
                 return Reflect.get(target, prop, receiver);
             },
             set: function(target, prop, value, receiver) {
-                if(!isNaN(prop)){
+                if(!isNaN(Number(prop))){
                     target.insert(prop, [value])
                     return true
                 }
@@ -41,6 +42,10 @@ class SharedArray extends Y.Array {
                 return Reflect.set(target, prop, value, receiver);
             }
         })
+    }
+
+    static fromArray (array) {
+        return SharedArray.from(Y.Array.from(array))
     }
 }
 

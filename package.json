@@ -2,7 +2,7 @@
   "name": "layback",
   "version": "0.0.0",
   "description": "The web framework to launch fast and relax.",
-  "main": "index.js",
+  "main": "./client.js",
   "type": "module",
   "scripts": {
     "test": "node --test",
@@ -10,14 +10,11 @@
   },
   "author": "",
   "license": "ISC",
-  "exports": {
-    "./server": "./server.js",
-    "./client": "./client.js"
-  },
   "dependencies": {
     "@hono/node-server": "^1.11.1",
     "hono": "^4.3.2",
     "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "level": "^8.0.1",
     "lib0": "^0.2.93",
     "lodash.debounce": "^4.0.8",

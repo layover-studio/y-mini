@@ -1,6 +1,7 @@
 import SharedDocModel from "./src/models/shared-doc.js"
 import SharedObjectModel from "./src/models/shared-object.js"
 import SharedArrayModel from "./src/models/shared-array.js"
+export { parseKeys } from "./src/services/zod.js"
 
 export const SharedDoc = SharedDocModel
 export const SharedObject = SharedObjectModel

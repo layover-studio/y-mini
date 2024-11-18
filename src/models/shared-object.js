@@ -47,7 +47,12 @@ class SharedObject extends Y.Map {
         })
     }
 
-    static from (ymap) {
+    static from (ymap, schema = false) {
+        if(schema) {
+            ymap.schema = schema
+            ymap.props = parseKeys(schema)
+        }
+
         return new Proxy(ymap, {
             get: function(target, prop, receiver) {
                 if(target.props.includes(prop)){
@@ -65,6 +70,7 @@ class SharedObject extends Y.Map {
                 return Reflect.get(target, prop, receiver);
             },
             set: function(target, prop, value, receiver) {
+                
                 if(target.props.includes(prop)){
                     // if(target.schema) {
                     //     const { shape } = target.schema
