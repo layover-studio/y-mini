@@ -1,7 +1,9 @@
 import { v4 as uuid } from 'uuid';
 import { generateId } from "lucia";
 
-import SharedDoc from "../models/shared-doc.js"
+import * as Y from "yjs"
+
+import User from "../models/user.js"
 
 import db from "./db.js"
 
@@ -15,30 +17,33 @@ export function createTable () {
             email VARCHAR(255),
             avatar_url VARCHAR(255),
             hasPaid BOOLEAN DEFAULT FALSE,
-            role VARCHAR(255) DEFAULT "USER"
+            role VARCHAR(255) DEFAULT "USER",
+            state BLOB
         );
     `)
     .run()
 }
 
 export async function create (args) {
-
+    
     const id = args.id ?? generateId(15)
 
     const res = await db().prepare(`
         INSERT INTO user 
-        (id, uuid, github_id, username, email, avatar_url) 
+        (id, uuid, github_id, username, email, avatar_url, state) 
         VALUES 
-        (?, ?, ?, ?, ?, ?);
+        (?, ?, ?, ?, ?, ?, ?);
     `)
-    .run(
+    .bind(
         id,
-        uuid(), 
+        args.uuid, 
         args.github_id, 
         args.username,
         args.email, 
-        args.avatar_url
+        args.avatar_url,
+        args.state
     )
+    .run()
 
     // TODO: generate key pair + sign data property
 
@@ -53,14 +58,15 @@ export async function findOneById (id) {
     const res = await db().prepare(`
         SELECT * FROM user WHERE id = ? LIMIT 1;
     `)
-    .get(id)
+    .bind(id)
+    .first()
 
     if(!res){
         return false
     }
 
-    const doc = new SharedDoc()
-    doc.import(res.state)
+    const doc = new User()
+    doc.import(Buffer.from(res.state))
 
 	return doc;
 }
@@ -69,14 +75,15 @@ export async function findOneByGithubId (id) {
     const res = await db().prepare(`
         SELECT * FROM user WHERE github_id = ? LIMIT 1;
     `)
-    .get(id)
+    .bind(id)
+    .first()
 
     if(!res){
         return false
     }
 
-    const doc = new SharedDoc()
-    doc.import(res.state)
+    const doc = new User()
+    doc.import(Buffer.from(res.state))
 
 	return doc;
 }
@@ -85,14 +92,15 @@ export async function findOneByEmail (id) {
     const res = await db().prepare(`
         SELECT * FROM user WHERE email = ? LIMIT 1;
     `)
-    .get(id)
+    .bind(id)
+    .first()
 
     if(!res){
         return false
     }
 
-    const doc = new SharedDoc()
-    doc.import(res.state)
+    const doc = new User()
+    doc.import(Buffer.from(res.state))
 
 	return doc;
 }
@@ -101,14 +109,15 @@ export async function findOne (uid) {
     const res = await db().prepare(`
         SELECT * FROM user WHERE uuid = ? LIMIT 1;
     `)
-    .get(uid)
+    .bind(uid)
+    .first()
 
     if(!res){
         return false
     }
 
-    const doc = new SharedDoc()
-    doc.import(res.state)
+    const doc = new User()
+    doc.import(Buffer.from(res.state))
 
 	return doc;
 }
@@ -120,22 +129,23 @@ export function update (user) {
         username = ?,
         email = ?,
         avatar_url = ?,
-        hasPaid = ?
+        state = ?
         WHERE uuid = ?;
     `)
-    .run(
+    .bind(
         user.username, 
         user.email,
         user.avatar_url,
-        user.hasPaid,
+        user.state,
         user.uuid
     )
+    .run()
 }
 
-export function save (user) {
-    const id = user.id
+export async function upsert (user) {
+    const res = await findOne(user.uuid)
 
-    if(id) {
+    if(res) {
         return update(user)
     }
 

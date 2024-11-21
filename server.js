@@ -1,3 +1,1 @@
-import LaybackServer from './src/server/index.js'
-
-export default LaybackServer
+export { default as User } from "./src/server/models/user.js"

@@ -22,7 +22,7 @@ before(async () => {
     await createDatabase()
 })
 
-test('', async (t) => {
+test('create a new user group', async () => {
     
 })
 
