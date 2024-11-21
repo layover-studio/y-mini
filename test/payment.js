@@ -24,35 +24,63 @@
 //     })
 // });
 
-// test('create payment session', async (t) => {
-//     const paymentSession = await PaymentService.create({ user });
+import test, { before, after } from 'node:test'
+import assert from 'node:assert'
+import { Miniflare } from "miniflare";
 
-//     assert(paymentSession.session_url)
-//     assert(paymentSession.session_id)
+import { setContext } from "../src/server/context.js"
 
-//     session_id = paymentSession.session_id
-// })
+import { createDatabase } from "../src/server/services/db.js"
+import * as SessionService from "../src/server/services/session.js"
+import * as PaymentService from "../src/server/services/payment.js"
+import * as UserService from "../src/server/services/user.js"
 
-// test('update user', async (t) => {
-//     const paymentSession = await PaymentService.findOneBySessionId({ session_id });
+var mf = false
 
-//     assert(paymentSession)
+before(async () => {
+    mf = new Miniflare({
+        modules: true,
+        script: "",
+        d1Databases: {
+            DB: "8dd54cb3-ea6c-42b2-bef1-7e7889d864cd"
+        },
+    });
+
+    setContext({
+        DB: await mf.getD1Database("DB")
+    })
+
+    await createDatabase()
+})
+
+test('create payment session', async (t) => {
+    const paymentSession = await PaymentService.create({ user });
+
+    assert(paymentSession.session_url)
+    assert(paymentSession.session_id)
+
+    session_id = paymentSession.session_id
+})
+
+test('update user', async (t) => {
+    const paymentSession = await PaymentService.findOneBySessionId({ session_id });
+
+    assert(paymentSession)
     
-//     const u = await UserService.findOneById(paymentSession.user_id)
+    const u = await UserService.findOneById(paymentSession.user_id)
     
-//     await UserService.update({
-//         ...u,
-//         hasPaid: 1
-//     })
+    // TODO: sign hasPaid field
 
-//     const updated_user = await UserService.findOneById(paymentSession.user_id)
+    // await UserService.update({
+    //     ...u,
+    //     hasPaid: 1
+    // })
 
-//     assert(updated_user.hasPaid)
-// })
+    // const updated_user = await UserService.findOneById(paymentSession.user_id)
 
-// test("get user payment status", async () => {
-    
-// })
-// // after(async () => {
-// //     await destroyDatabase()
-// // })
+    // assert(updated_user.hasPaid)
+})
+
+after(async () => {
+    await mf.dispose();
+})

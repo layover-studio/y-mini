@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { v4 as uuidv4 } from "uuid";
+import { context } from "../context.js"
 
 import db from "./db.js";
 
@@ -22,7 +23,7 @@ export function createTable () {
 }
 
 export async function create(args){
-	const stripe = new Stripe(process.env.STRIPE_SK);
+	const stripe = new Stripe(context.STRIPE_SK);
 
 	const uuid = args.uuid ? args.uuid : uuidv4()
 
@@ -30,7 +31,7 @@ export async function create(args){
 		client_reference_id: uuid,
 		line_items: [
 		  {
-			price: process.env.STRIPE_PRICE_ID,
+			price: context.STRIPE_PRICE_ID,
 			quantity: 1
 		  }
 		],

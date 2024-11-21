@@ -1,9 +1,10 @@
 import { GitHub } from "arctic";
+import { context } from "../context.js"
 
 export const github = () => {
 	// console.log(context())
 	return new GitHub(
-		process.env.GITHUB_CLIENT_ID,
-		process.env.GITHUB_CLIENT_SECRET
+		context.GITHUB_CLIENT_ID,
+		context.GITHUB_CLIENT_SECRET
 	);
 }
