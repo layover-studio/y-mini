@@ -10,7 +10,7 @@ import db from "./db.js"
 export function createTable () {
     return db().prepare(`
         CREATE TABLE IF NOT EXISTS user (
-            id TEXT NOT NULL PRIMARY KEY,
+            id INTEGER PRIMARY KEY,
             uuid VARCHAR(36) UNIQUE,
             github_id VARCHAR(255) UNIQUE,
             username VARCHAR(255),
@@ -25,17 +25,13 @@ export function createTable () {
 }
 
 export async function create (args) {
-    
-    const id = args.id ?? generateId(15)
-
     const res = await db().prepare(`
         INSERT INTO user 
-        (id, uuid, github_id, username, email, avatar_url, state) 
+        (uuid, github_id, username, email, avatar_url, state) 
         VALUES 
-        (?, ?, ?, ?, ?, ?, ?);
+        (?, ?, ?, ?, ?, ?);
     `)
     .bind(
-        id,
         args.uuid, 
         args.github_id, 
         args.username,
@@ -51,7 +47,7 @@ export async function create (args) {
     //     user: existingUser
     // })
 
-    return findOneById(id)
+    return findOne(args.uuid)
 }
 
 export async function findOneById (id) {

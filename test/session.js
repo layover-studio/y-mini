@@ -7,6 +7,7 @@ import { setContext } from "../src/server/context.js"
 import { createDatabase } from "../src/server/services/db.js"
 import * as SessionService from "../src/server/services/session.js"
 import * as UserService from "../src/server/services/user.js"
+import User from "../src/server/models/user.js"
 
 var mf = false
 var user = false
@@ -29,11 +30,14 @@ before(async () => {
 })
 
 test('create a new session', async () => {
-    user = await UserService.create({
+    user = new User({
+        email: 'test@gmail.com',
+        github_id: 'ok'
+    }) 
 
-    })
+    const res = await user.save()
 
-    session = await SessionService.create({ user })
+    session = await SessionService.create(user)
 
     assert(session)
 })
@@ -46,7 +50,7 @@ test('find a session by uid', async () => {
 
 test('find a session by user', async () => {
     const res = await SessionService.findOneByUser(user)
-    const res2 = await UserService.findOneById(res.fk_user)
+    const res2 = await UserService.findOneById(res.user_id)
 
     assert(res && res2.uuid == user.uuid)
 })
@@ -56,8 +60,7 @@ test('check a session', async () => {
 
     assert(res)
 
-    session.expireAt = 60 * 10
-    session.createdAt = new Date("2023-05-02 23:55:55")
+    session.expires_at = new Date("2023-05-02 23:55:55").getTime()
 
     res = await SessionService.check(session)
 
