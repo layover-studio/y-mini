@@ -14,6 +14,7 @@
   "dependencies": {
     "@hono/node-server": "^1.11.1",
     "@lucia-auth/adapter-sqlite": "^3.0.2",
+    "fake-indexeddb": "^6.0.0",
     "hono": "^4.3.2",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",

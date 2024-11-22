@@ -1,6 +1,6 @@
 import db from "./db.js"
 import { v4 as uuid } from 'uuid';
-import auth from "./auth.js";
+
 import * as UserService from "./user.js"
 
 export function createTable () {
