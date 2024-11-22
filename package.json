@@ -6,7 +6,7 @@
   "browser": "./client.js",
   "type": "module",
   "scripts": {
-    "test": "node --test",
+    "test": "node --test --env-file=.env",
     "clean": "rm -rf db"
   },
   "author": "",

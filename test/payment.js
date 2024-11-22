@@ -1,29 +1,3 @@
-// import test, { before, after } from "node:test"
-// import assert from "node:assert"
-
-// import { destroyDatabase } from "../server/src/services/db.js"
-// import * as UserService from "../server/src/services/user.js"
-// import * as SessionService from "../server/src/services/session.js"
-// import * as PaymentService from "../server/src/services/payment.js"
-
-// import app from "../server/server.js"
-
-// let user = false
-// let session_id = false
-
-// before(async () => {
-//     await UserService.createTable()
-//     await SessionService.createTable()
-//     await PaymentService.createTable()
-    
-//     user = await UserService.create({
-//         github_id: "test", 
-//         username: "test",
-//         email: "test", 
-//         avatar_url: "test"
-//     })
-// });
-
 import test, { before, after } from 'node:test'
 import assert from 'node:assert'
 import { Miniflare } from "miniflare";
@@ -31,11 +5,14 @@ import { Miniflare } from "miniflare";
 import { setContext } from "../src/server/context.js"
 
 import { createDatabase } from "../src/server/services/db.js"
-import * as SessionService from "../src/server/services/session.js"
+
 import * as PaymentService from "../src/server/services/payment.js"
 import * as UserService from "../src/server/services/user.js"
+import User from "../src/server/models/user.js"
 
 var mf = false
+var user = false
+var session_id = false
 
 before(async () => {
     mf = new Miniflare({
@@ -47,10 +24,19 @@ before(async () => {
     });
 
     setContext({
-        DB: await mf.getD1Database("DB")
+        DB: await mf.getD1Database("DB"),
+        STRIPE_SK: process.env.STRIPE_SK,
+        STRIPE_PRICE_ID: process.env.STRIPE_PRICE_ID
     })
 
     await createDatabase()
+
+    user = new User({
+        email: 'test@gmail.com',
+        github_id: 'ok'
+    })
+
+    await user.save()
 })
 
 test('create payment session', async (t) => {

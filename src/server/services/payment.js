@@ -14,7 +14,7 @@ export function createTable () {
 			uuid VARCHAR(36) UNIQUE,
 			session_id TEXT,
 			content TEXT,
-			user_id TEXT NOT NULL,
+			user_id INTEGER NOT NULL,
 			website VARCHAR(255),
 			FOREIGN KEY (user_id) REFERENCES user(id)
 		);
@@ -40,6 +40,8 @@ export async function create(args){
 		cancel_url: `http://localhost:4321/payment/cancel`,
 	  });
 
+	  const id = await db().prepare(`SELECT id from user WHERE uuid = ? LIMIT 1`).bind(args.user.uuid).first('id') 
+
 	await db()
 	.prepare(`
 		INSERT INTO paymentSession (
@@ -55,7 +57,7 @@ export async function create(args){
 	.bind(
 		uuid,
 		session.id,
-		args.user.id
+		id
 	)
 	.run();
 
@@ -64,7 +66,7 @@ export async function create(args){
 		uuid,
 		session_url: session.url,
 		session_id: session.id,
-		user_id: args.user.id
+		user_id: id
 	};
 }
 
@@ -75,7 +77,8 @@ export async function findOneBySessionId(args){
 		SELECT * FROM paymentSession WHERE session_id = ? LIMIT 1
 	`
 	)
-	.get(args.session_id);
+	.bind(args.session_id)
+	.first()
 
 	return res;
 }
