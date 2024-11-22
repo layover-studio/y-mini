@@ -17,3 +17,19 @@ export const UserSchema = z.object({
     })),
     isDeleted: z.boolean()
 });
+
+export const UserGroupSchema = z.object({
+    uuid: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    name: z.string(),
+    isAnonymous: z.boolean(),
+    members: z.string(),
+    scenes: z.array(z.string()),
+    _prelim_acl: z.array(z.object({
+        user: z.string(),
+        role: z.string(),
+        action: z.string()
+    })),
+    isDeleted: z.boolean()
+});

@@ -80,6 +80,10 @@ class SharedArray {
         return this.array.clone()
     }
 
+    delete (index, size) {
+        return this.array.delete(index, size)
+    }
+
     toJSON(){
         return this.array.toJSON()
     }

@@ -1,71 +1,10 @@
-import * as Y from 'yjs';
-
 import jwt from 'jsonwebtoken'
+import { z } from "zod"
 
-import SharedArray from "../../../src/core/models/shared-array.js"
-import SharedObject from "../../../src/core/models/shared-object.js"
+import SharedArray from "../../core/models/shared-array.js"
+import SD from "../../core/models/shared-doc.js"
 
-import { parseKeys } from "../../../src/core/services/zod.js"
-
-class SharedDoc extends Y.Doc {
-    constructor(schema){
-        super()
-        
-        this.schema = schema
-        this.props = parseKeys(schema)
-
-        return new Proxy(this, {
-            get: function(target, prop, receiver) {
-                if(target.props.includes(prop)){
-                    const res = target.getMap("root").get(prop)
-        
-                    if(res instanceof Y.Array){
-                        return SharedArray.from(res)
-                    } else if(res instanceof Y.Map){
-                        return SharedObject.from(res)
-                    }
-        
-                    return res
-                }
-        
-                return Reflect.get(target, prop, receiver);
-            },
-            set: function(target, prop, value, receiver) {
-                // console.log(target.properties, prop)
-        
-                if(target.props.includes(prop)){
-                    // if(target.schema) {
-                    //     const { shape } = target.schema
-
-                    //     console.log(prop)
-                    //     console.log(shape[prop])
-                    //     console.log(shape[prop].safeParse(value))
-        
-                    //     if(!shape[prop] || !shape[prop].safeParse(value).success){
-                    //         throw new Error(`Invalid value for property ${prop}`)
-                    //     }
-                    // }
-        
-                    target.getMap("root").set(prop, value)
-
-                    return true
-                }
-        
-                return Reflect.set(target, prop, value, receiver);
-            }
-        })
-    }
-
-    export () {
-        return Y.encodeStateAsUpdate(this)
-    }
-
-    import (update) {
-        Y.applyUpdate(this, update)
-
-        return true
-    }
-
+class SharedDoc extends SD {
     hasRight(user, role){
         const acl = this.getMap('root').get('members')
 
@@ -108,7 +47,11 @@ class SharedDoc extends Y.Doc {
             }
 
             
-            this.getMap('root').set('_prelim_acl', new SharedArray())   
+            this.getMap('root').set('_prelim_acl', new SharedArray(z.array(z.object({
+                user: z.string(),
+                role: z.string(),
+                action: z.string()
+            }))))   
             
             var new_acl = jwt.sign({data: tmp}, 'secret');
 
@@ -117,10 +60,6 @@ class SharedDoc extends Y.Doc {
             console.error(err)
             throw new Error('invalid acl')
         }
-    }
-
-    toJSON () {
-        return this.getMap('root').toJSON()
     }
 }
 
