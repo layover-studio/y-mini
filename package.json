@@ -5,6 +5,10 @@
   "main": "./server.js",
   "browser": "./client.js",
   "type": "module",
+  "exports": {
+    "./client": "./client.js",
+    "./server": "./server.js"
+  },
   "scripts": {
     "test": "node --test --env-file=.env",
     "clean": "rm -rf db"

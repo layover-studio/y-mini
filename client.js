@@ -1,14 +1,8 @@
-import SharedDocModel from "./src/core/models/shared-doc.js"
-import SharedObjectModel from "./src/core/models/shared-object.js"
-import SharedArrayModel from "./src/core/models/shared-array.js"
-export { parseKeys } from "./src/core/services/zod.js"
+export { default as SharedDoc } from "./src/client/models/shared-doc.js"
+export { default as SharedObject } from "./src/core/models/shared-array.js"
+export { default as SharedArray } from "./src/core/models/shared-object.js"
 
-export const SharedDoc = SharedDocModel
-export const SharedObject = SharedObjectModel
-export const SharedArray = SharedArrayModel
+export { default as UserGroup } from "./src/client/models/user-group.js"
+export { default as User } from "./src/server/models/user.js"
 
-export default {
-    SharedDoc,
-    SharedObject,
-    SharedArray
-}
+export { UserSchema, UserGroupSchema } from "./src/core/schemas.js"
