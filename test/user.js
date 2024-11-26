@@ -2,7 +2,7 @@ import test, { before, after } from 'node:test'
 import assert from 'node:assert'
 import { Miniflare } from "miniflare";
 import { setContext } from "../src/server/context.js"
-import { createDatabase } from "../src/server/services/db.js"
+// import { db } from "../src/server/services/db.js"
 
 import { User } from "../server.js"
 import * as UserService from "../src/server/services/user.js"
@@ -23,7 +23,7 @@ before(async () => {
         DB: await mf.getD1Database("DB")
     })
 
-    await createDatabase()
+    await UserService.createTable()
 })
 
 test('create a new user', async () => {

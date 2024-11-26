@@ -4,7 +4,6 @@ import { Miniflare } from "miniflare";
 
 import { setContext } from "../src/server/context.js"
 
-import { createDatabase } from "../src/server/services/db.js"
 import * as SessionService from "../src/server/services/session.js"
 import * as UserService from "../src/server/services/user.js"
 import User from "../src/server/models/user.js"
@@ -26,7 +25,8 @@ before(async () => {
         DB: await mf.getD1Database("DB")
     })
 
-    await createDatabase()
+    await UserService.createTable()
+    await SessionService.createTable()
 })
 
 test('create a new session', async () => {

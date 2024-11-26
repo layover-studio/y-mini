@@ -2,9 +2,9 @@ import test, { before, after } from 'node:test'
 import assert from 'node:assert'
 import { Miniflare } from "miniflare";
 import { setContext } from "../src/server/context.js"
-import { createDatabase } from "../src/server/services/db.js"
+
+import * as UserService from "../src/server/services/user.js"
 import { UserGroup } from "../server.js"
-import * as UserGroupService from "../src/server/services/user-group.js"
 
 var mf = false
 var uuid = false
@@ -22,7 +22,8 @@ before(async () => {
         DB: await mf.getD1Database("DB")
     })
 
-    await createDatabase()
+    await UserService.createTable()
+    await UserGroup.createTable()
 })
 
 test("create new organization", async () => {
@@ -46,7 +47,10 @@ test("save organization", async () => {
 })
 
 test("find organization by uid", async () => {
-    const org = await UserGroupService.findOne(uuid)
+    const data = await UserGroup.findOne(uuid)
+
+    const org = new UserGroup()
+    org.import(Buffer.from(data.state))
 
     assert(org.uuid == uuid)
 })
@@ -138,7 +142,9 @@ test("remove scenes", async () => {
 })
 
 test("change org name", async () => {    
-    let organization2 = await UserGroupService.findOne(uuid)
+    let data = await UserGroup.findOne(uuid)
+    const organization2 = new UserGroup()
+    organization2.import(Buffer.from(data.state))
     
     organization2.name = 'test2'
     
@@ -146,19 +152,22 @@ test("change org name", async () => {
 
     assert(organization2.name == 'test2')
 
-    const organization3 = await UserGroupService.findOne(uuid)
+    data = await UserGroup.findOne(uuid)
+    const organization3 = new UserGroup()
+    organization3.import(Buffer.from(data.state))
 
     assert(organization3.name == 'test2')
 })
 
 test("remove organization", async () => {
-    let organization = await UserGroupService.findOne(uuid)
+    let data = await UserGroup.findOne(uuid)
+    const organization = new UserGroup()
+    organization.import(Buffer.from(data.state))
 
     await organization.remove()
 
-    const res2 = await UserGroupService.findOne(uuid)
-
-    assert(!res2)
+    data = await UserGroup.findOne(uuid)
+    assert(!data)
 })
 
 after(async () => {

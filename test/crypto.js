@@ -8,7 +8,6 @@ import { setContext } from "../src/server/context.js"
 import cookie from "cookie"
 import jwt from "jsonwebtoken"
 
-import { createDatabase } from "../src/server/services/db.js"
 import * as SessionService from "../src/server/services/session.js"
 import * as UserService from "../src/server/services/user.js"
 import * as CryptoService from "../src/server/services/crypto.js"
@@ -30,7 +29,9 @@ before(async () => {
         DB: await mf.getD1Database("DB")
     })
 
-    await createDatabase()
+    await UserService.createTable()
+    await SessionService.createTable()
+    await CryptoService.createTable()
 
     user = new User({
         email: 'test@gmail.com',

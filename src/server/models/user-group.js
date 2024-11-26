@@ -1,5 +1,3 @@
-import * as UserGroupService from "../services/user-group.js"
-
 import { v4 as uuid } from 'uuid';
 import { z } from "zod";
 
@@ -29,9 +27,7 @@ class UserGroup extends SharedDoc {
 
     static import (update) {
         const res = new UserGroup()
-
         res.import(update)
-
         return res
     }
 
@@ -42,19 +38,6 @@ class UserGroup extends SharedDoc {
     removeScene (scene) {
         const index = this.scenes.toJSON().indexOf(scene.uuid)
         return this.scenes.delete(index, 1)
-    }
-    
-    async save(){
-        const state = await this.export()
-
-        return UserGroupService.upsert({
-            ...this.toJSON(),
-            state
-        })
-    }
-
-    remove() {
-        return UserGroupService.remove(this)
     }
 }
 

@@ -4,8 +4,6 @@ import { Miniflare } from "miniflare";
 
 import { setContext } from "../src/server/context.js"
 
-import { createDatabase } from "../src/server/services/db.js"
-
 import * as PaymentService from "../src/server/services/payment.js"
 import * as UserService from "../src/server/services/user.js"
 import User from "../src/server/models/user.js"
@@ -29,7 +27,8 @@ before(async () => {
         STRIPE_PRICE_ID: process.env.STRIPE_PRICE_ID
     })
 
-    await createDatabase()
+    await UserService.createTable()
+    await PaymentService.createTable()
 
     user = new User({
         email: 'test@gmail.com',
