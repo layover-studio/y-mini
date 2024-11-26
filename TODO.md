@@ -1,18 +1,22 @@
 - should be able to extend base zod schema
   - should be able to setSchema in shared doc
   - extend zod
+- data validation
+  - each shared doc should have a method that checks the data matches the zod schema
+
 - should be able to call service methods from within model class (static method)
   - CRUD
+
 - authorization / acl
   - add / remove members
   - read ACL
   - sign ACL
   - verify ACL
+
 - remote sync
   - http endpoint
   - retrieve / store state
-- data validation
-  - each shared doc should have a method that checks the data matches the zod schema
+
 - websocket server
   - create client script for testing
   - should be able to manage connections

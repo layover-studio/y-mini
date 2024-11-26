@@ -3,7 +3,7 @@ import assert from "node:assert"
 
 import { z } from "zod";
 
-import { SharedDoc, SharedObject, SharedArray } from "../client.js"
+import { SharedDoc, SharedObject, SharedArray } from "../server.js"
 
 test("create shared array", async () => {
     const doc = new SharedDoc(z.object({
@@ -28,7 +28,6 @@ test("create shared array", async () => {
 
     // console.log(author)
 
-    
     doc.authors.push([author])
     
     assert(doc.authors[0].name == "test")

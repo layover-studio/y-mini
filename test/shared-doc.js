@@ -3,7 +3,7 @@ import assert from "node:assert"
 
 import { z } from "zod";
 
-import { SharedDoc } from "../client.js"
+import { SharedDoc } from "../server.js"
 
 test("create doc", async () => {
     const doc = new SharedDoc(z.object({

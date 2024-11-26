@@ -10,8 +10,8 @@ import { parseKeys } from "../services/zod.js"
 
 class SharedDoc {
     constructor(schema){        
-        this.schema = schema
-        this.props = parseKeys(schema)
+        this.setSchema(schema)
+
         this.doc = new Y.Doc()
 
         return new Proxy(this, {
@@ -99,6 +99,15 @@ class SharedDoc {
 
     toJSON () {
         return this.doc.getMap('root').toJSON()
+    }
+
+    setSchema(schema){
+        this.schema = schema
+        this.props = parseKeys(schema)
+    }
+
+    validate(){
+        return this.schema.safeParse(this.toJSON()).success
     }
 }
 
