@@ -55,64 +55,6 @@ test("find organization by uid", async () => {
     assert(org.uuid == uuid)
 })
 
-// // test("add members", async () => {
-// //     const organization = new Organization({
-// //         name: "test"
-// //     })
-
-// //     const user = await UserService.create({
-// //         github_id: "ok",
-// //         username: "ok",
-// //         email: "ok",
-// //         avatar_url: "ok"
-// //     }) 
-
-// //     organization.addMember({
-// //         user: user.id,
-// //         role: "admin"
-// //     })
-
-// //     let state = await organization.export()
-
-// //     const session = await SessionService.create(user)
-
-// //     let res = await app.request(`/api/docs/${organization.uuid}/update?type=organization`, {
-// //         method: 'POST',
-// //         headers: {
-// //             'Origin': "https://devreel.com",
-// //             'Cookie': `session=${session.id};httpOnly`
-// //         },
-// //         body: state
-// //     })
-// //     .then(res => res.arrayBuffer())
-// //     .then(res => new Uint8Array(res))
-
-// //     assert(res)
-
-// //     organization.import(res)
-
-// //     assert(organization.hasRight({ uuid: user.id }, "admin"))
-
-// //     organization.removeMember(user)
-
-// //     state = await organization.export()
-
-// //     res = await app.request(`/api/docs/${organization.uuid}/update?type=organization`, {
-// //         method: 'POST',
-// //         headers: {
-// //             'Origin': "https://devreel.com",
-// //             'Cookie': `session=${session.id};httpOnly`
-// //         },
-// //         body: state
-// //     })
-// //     .then(res => res.arrayBuffer())
-// //     .then(res => new Uint8Array(res))
-
-// //     organization.import(res)
-
-// //     assert(organization.getMembers().length == 0)
-// // })
-
 test("add scenes", async () => {
     const organization = new UserGroup({
         name: "test"

@@ -13,11 +13,6 @@ class UserGroup extends SharedDoc {
             this.uuid = uuid()
             this.name = args && args.name ? args.name : ''
             this.scenes = new SharedArray(z.array(z.string()))
-            this._prelim_acl = new SharedArray(z.array(z.object({
-                user: z.string(),
-                role: z.string(),
-                action: z.string()
-            })))
         }
 
         // this.transitions = new SharedArray()

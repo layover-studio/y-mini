@@ -14,6 +14,13 @@ class SharedDoc {
 
         this.doc = new Y.Doc()
 
+        // this.members
+        // this._prelim_acl = new SharedArray(z.array(z.object({
+        //     user: z.string(),
+        //     role: z.string(),
+        //     action: z.string()
+        // })))
+
         return new Proxy(this, {
             get: function(target, prop, receiver) {
                 if(target.props.includes(prop)){
@@ -76,20 +83,40 @@ class SharedDoc {
     }
 
     addMember (args) {
+        if(!this._prelim_acl){
+            this._prelim_acl = new SharedArray(z.array(z.object({
+                user: z.string(),
+                role: z.string(),
+                action: z.string()
+            })))
+        }
+
         this._prelim_acl.push([{ ...args, action: "add" }])
     }
 
     removeMember (user) {
+        if(!this._prelim_acl){
+            return true
+        }
+
         this._prelim_acl.push([{ user: user.id, action: "remove" }])
     }
 
-    hasRight(user, role){
-        const acl = jwtDecode(this.members).data
+    // hasRight(user, role){
+    //     if(!this.members){
+    //         return false
+    //     }
 
-        return acl.find(el => el.user == user.uuid && el.role == role)
-    }
+    //     const acl = jwtDecode(this.members).data
+
+    //     return acl.find(el => el.user == user.uuid && el.role == role)
+    // }
 
     getMembers(){
+        if(!this.members){
+            return []
+        }
+
         return jwtDecode(this.members).data
     }
 

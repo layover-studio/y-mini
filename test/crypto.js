@@ -32,25 +32,22 @@ before(async () => {
     await UserService.createTable()
     await SessionService.createTable()
     await CryptoService.createTable()
-
-    user = new User({
-        email: 'test@gmail.com',
-        github_id: 'ok'
-    })
-
-    await user.save()
 });
 
 test("create key pair", async () => {
     const keyPair = await CryptoService.create({
-        user
+        doc: {
+            uuid: 'test'
+        }
     })
 
     assert(keyPair)
 })
 
 test("sign jwt", async () => {
-    const keyPair = await CryptoService.findOneByUser(user)
+    const keyPair = await CryptoService.findOneByDoc({
+        uuid: 'test'
+    })
 
     const token = jwt.sign({ foo: 'bar' }, keyPair.privateKey, { algorithm: 'ES384' });
 
@@ -60,7 +57,9 @@ test("sign jwt", async () => {
 })
 
 test("remove key pair", async () => {
-    const keyPair = await CryptoService.findOneByUser(user)
+    const keyPair = await CryptoService.findOneByDoc({
+        uuid: 'test'
+    })
     const res = await CryptoService.remove(keyPair)
 
     assert(res)

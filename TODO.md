@@ -4,6 +4,8 @@
   - sign ACL
   - verify ACL
 
+- frontend testing / devreel cleanup to get offline-first working
+
 - remote sync
   - http endpoint
   - retrieve / store state

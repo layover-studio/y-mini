@@ -14,33 +14,33 @@ class SharedDoc extends SD {
             state
         })
     }
-    
-    hasRight(user, role){
-        const acl = this.getMap('root').get('members')
+
+    hasRight(user, role, keyPair){
+        const acl = this.members
 
         if(!acl) {
-            return true
+            return false
         }
             
-        const tmp = jwt.verify(acl, 'secret').data
+        const tmp = jwt.verify(acl, keyPair.publicKey, { algorithm: 'ES384' }).data
         
-        return tmp.find(el => el.user == user.id && el.role == role)
+        return tmp.filter(el => el.user == user.id && el.role == role).length > 0
     }
 
-    buildAcl(user){
+    buildAcl(keyPair){
         try {
-            const acl = this.getMap('root').get('members')
+            const acl = this.members ?? false
             
-            let tmp = acl ? jwt.verify(acl, 'secret').data : [];
+            let tmp = acl ? jwt.verify(acl, keyPair.publicKey, { algorithm: 'ES384' }).data : [];
             
-            const _prelim_acl = this.getMap('root').get('_prelim_acl') ? this.getMap('root').get('_prelim_acl').toJSON() : []
+            const _prelim_acl = this._prelim_acl.toJSON()
             const size = _prelim_acl.length
 
             
             for(let i = 0 ; i < size ; i++){
                 const access_rule = _prelim_acl[i]
                 
-                if(this.hasRight(user, "admin")){
+                // if(this.hasRight(user, "admin")){
                     
                     switch(access_rule.action) {
                         case "add": 
@@ -53,19 +53,19 @@ class SharedDoc extends SD {
                             tmp = tmp.filter(el => el.user != access_rule.user)
                             break;
                     }
-                }
+                // }
             }
 
             
-            this.getMap('root').set('_prelim_acl', new SharedArray(z.array(z.object({
+            this._prelim_acl = new SharedArray(z.array(z.object({
                 user: z.string(),
                 role: z.string(),
                 action: z.string()
-            }))))   
+            })))
             
-            var new_acl = jwt.sign({data: tmp}, 'secret');
+            const new_acl = jwt.sign({data: tmp}, keyPair.privateKey, { algorithm: 'ES384' });
 
-            this.getMap('root').set('members', new_acl)
+            this.members = new_acl
         } catch (err) {
             console.error(err)
             throw new Error('invalid acl')

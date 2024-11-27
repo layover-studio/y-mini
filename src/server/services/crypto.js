@@ -22,10 +22,9 @@ export function createTable () {
             uuid VARCHAR(36) UNIQUE,
             created_at BIGINT DEFAULT CURRENT_TIMESTAMP,
             updated_at BIGINT DEFAULT CURRENT_TIMESTAMP,
-            user_id INTEGER NOT NULL,
+            doc VARCHAR(36),
             publicKey TEXT,
-            privateKey TEXT,
-            FOREIGN KEY (user_id) REFERENCES user(id)
+            privateKey TEXT
         );
     `)
     .run()
@@ -61,31 +60,29 @@ export async function create (args) {
     const publicKey = toPem(await crypto.subtle.exportKey("spki", keyPair.publicKey), 'public')
     const privatekey = toPem(await crypto.subtle.exportKey("pkcs8", keyPair.privateKey), 'private')
 
-    const id = await db().prepare(`SELECT id from user WHERE uuid = ? LIMIT 1`).bind(args.user.uuid).first('id') 
+    // const id = await db().prepare(`SELECT id from user WHERE uuid = ? LIMIT 1`).bind(args.user.uuid).first('id') 
 
     await db()
 	.prepare(`
-		INSERT INTO keyPairs (uuid, publicKey, privatekey, user_id) VALUES (?, ?, ?, ?)
+		INSERT INTO keyPairs (uuid, publicKey, privatekey, doc) VALUES (?, ?, ?, ?)
 	`)
     .bind(
 		uuid(),
 		publicKey,
 		privatekey,
-		id
+		args.doc.uuid
 	)
 	.run();
 
-    return findOneByUser(args.user)
+    return findOneByDoc(args.doc)
 }
 
-export async function findOneByUser(user){
-  const id = await db().prepare(`SELECT id from user WHERE uuid = ? LIMIT 1`).bind(user.uuid).first('id') 
-
+export async function findOneByDoc(doc){
     return db()
 	.prepare(`
-		SELECT * FROM keyPairs WHERE user_id = ? LIMIT 1
+		SELECT * FROM keyPairs WHERE doc = ? LIMIT 1
 	`)
-  .bind(id)
+  .bind(doc.uuid)
 	.first();
 }
 
