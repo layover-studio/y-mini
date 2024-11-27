@@ -1,9 +1,3 @@
-- authorization / acl
-  - add / remove members
-  - read ACL
-  - sign ACL
-  - verify ACL
-
 - frontend testing / devreel cleanup to get offline-first working
 
 - remote sync
