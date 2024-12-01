@@ -6,11 +6,9 @@ import { jwtDecode } from "jwt-decode";
 import SharedArray from "./shared-array.js"
 import SharedObject from "./shared-object.js"
 
-import { parseKeys } from "../services/zod.js"
-
 class SharedDoc {
-    constructor(schema){        
-        this.setSchema(schema)
+    constructor({ collection }){        
+        this.collection = collection
 
         this.doc = new Y.Doc()
 
@@ -23,13 +21,13 @@ class SharedDoc {
 
         return new Proxy(this, {
             get: function(target, prop, receiver) {
-                if(target.props.includes(prop)){
+                if(target.collection.props.includes(prop)){
                     const res = target.doc.getMap("root").get(prop)
                     
                     if(res instanceof Y.Array){
-                        return SharedArray.from(res, target.schema.shape[prop])
+                        return SharedArray.from(res, target.collection.schema.shape[prop])
                     } else if(res instanceof Y.Map){
-                        return SharedObject.from(res, target.schema.shape[prop])
+                        return SharedObject.from(res, target.collection.schema.shape[prop])
                     }
         
                     return res
@@ -40,7 +38,7 @@ class SharedDoc {
             set: function(target, prop, value, receiver) {
                 // console.log(target.properties, prop)
         
-                if(target.props.includes(prop)){
+                if(target.collection.props.includes(prop)){
                     // if(target.schema) {
                     //     const { shape } = target.schema
 
@@ -128,13 +126,8 @@ class SharedDoc {
         return this.doc.getMap('root').toJSON()
     }
 
-    setSchema(schema){
-        this.schema = schema
-        this.props = parseKeys(schema)
-    }
-
     validate(){
-        return this.schema.safeParse(this.toJSON()).success
+        return this.collection.schema.safeParse(this.toJSON()).success
     }
 }
 

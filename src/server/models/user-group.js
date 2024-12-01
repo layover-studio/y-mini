@@ -1,13 +1,15 @@
 import { v4 as uuid } from 'uuid';
 import { z } from "zod";
 
-import { UserGroupSchema } from "../../core/schemas.js";
 import SharedDoc from "./shared-doc.js"
 import SharedArray from "../../core/models/shared-array.js"
+import { getCollection } from "../../core/services/collection.js"
 
 class UserGroup extends SharedDoc {
     constructor (args) {
-        super(UserGroupSchema)
+        super({
+            collection: getCollection('user')
+        })
 
         if(args) {
             this.uuid = uuid()

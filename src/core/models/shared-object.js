@@ -2,7 +2,7 @@ import * as Y from 'yjs';
 
 import SharedArray from './shared-array.js'
 
-import { parseKeys } from "../services/zod.js"
+import { parseKeys } from "../services/collection.js"
 
 class SharedObject {
     constructor (schema) {

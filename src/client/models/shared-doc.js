@@ -1,20 +1,79 @@
-// import jwt from 'jsonwebtoken'
-// import { z } from "zod"
+import * as jwt from 'jose'
 
-import SharedArray from "../../core/models/shared-array.js"
 import SD from "../../core/models/shared-doc.js"
+import { db } from "../services/db.js";
 
 class SharedDoc extends SD {
-    hasRight(user, role){
-        // const acl = this.getMap('root').get('members')
+    async save(){
+        return SharedDoc.upsert(this)
+    }
 
-        // if(!acl) {
-        //     return true
-        // }
-            
-        // const tmp = jwt.verify(acl, 'secret').data
+    // to get the public key in a usable format
+    // let publicKey = await fetch('http://localhost:8787/api/user/public-key', {
+    //     credentials: 'include'
+    // })
+    // .then(res => res.json())
+    // .then(res => res.publicKey)
+    // .catch(err => false)
+    // publicKey = await jose.importSPKI(publicKey, 'ES384')
+    async hasRight(user, role, keyPair){
+        const acl = this.members
+        let tmp = []
+
+        if(!acl) {
+            return false
+        }
+
+        try {
+            const { payload, protectedHeader } = await jwt.jwtVerify(acl, publicKey)
+            tmp = payload.data
+        } catch (err) {
+            return false
+        }
         
-        // return tmp.find(el => el.user == user.id && el.role == role)
+        return tmp.filter(el => el.user == user.id && el.role == role).length > 0
+    }
+
+    remove(){
+        return SharedDoc.remove(this)
+    }
+
+    static async findOne(uid){
+        const res = await db()[doc.schema.name].where("uuid").equals(uid).limit(1).first()
+
+        if(!res) {
+            return false
+        }
+
+        return res.state
+    }
+
+    static async findAll(){
+        const res = await db()[doc.schema.name].toArray()
+    
+        return res.map(org => org.state)
+    }
+    
+
+    static async upsert (doc) {
+        const indexes = doc.getIndexes()
+        let indexed_data = {}
+        const data = doc.toJSON()
+
+        for(index in indexes){
+            indexed_data[index] = data[index] 
+        }
+
+        return db()[doc.schema.name].put({
+            ...indexed_data,
+            state: doc.export()
+        }, doc.uuid)
+    }
+    
+    static remove (doc) {
+        // TODO: mark organization doc as deleted
+    
+        return db()[doc.schema.name].delete(doc.uuid)
     }
 }
 
