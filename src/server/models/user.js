@@ -2,13 +2,16 @@ import { v4 as uuid } from 'uuid';
 
 import SharedDoc from "./shared-doc.js"
 
-import { UserSchema } from "../../core/schemas.js"
+import { getCollection } from "../../core/services/collection.js"
 
 import * as UserService from "../services/user.js"
 
 class UserServer extends SharedDoc {
     constructor(args){
-        super(UserSchema)
+        console.log()
+        super({
+            collection: getCollection('user')
+        })
 
         if(args) {
             this.uuid = args.uuid ?? uuid()

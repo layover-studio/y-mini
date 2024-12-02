@@ -2,11 +2,11 @@ import test, { before, after } from 'node:test'
 import assert from 'node:assert'
 import { Miniflare } from "miniflare";
 
-import { setContext } from "../src/server/context.js"
+import { setContext } from "../../src/server/context.js"
 
-import * as PaymentService from "../src/server/services/payment.js"
-import * as UserService from "../src/server/services/user.js"
-import User from "../src/server/models/user.js"
+import * as PaymentService from "../../src/server/services/payment.js"
+import * as UserService from "../../src/server/services/user.js"
+import { User } from "../../server.js"
 
 var mf = false
 var user = false

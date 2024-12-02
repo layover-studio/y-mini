@@ -3,15 +3,20 @@ import assert from "node:assert"
 
 import { z } from "zod";
 
-import { SharedDoc, SharedObject } from "../server.js"
+import { SharedDoc, SharedObject, defineCollection } from "../../server.js"
 
 test("create object", async () => {
-    const doc = new SharedDoc(z.object({
-        title: z.string(),
-        author: z.object({
-            name: z.string()
+    const doc = new SharedDoc({
+        collection: defineCollection({
+            name: "test",
+            schema: {
+                title: z.string(),
+                author: z.object({
+                    name: z.string()
+                })
+            }
         })
-    }))
+    })
 
     const author = new SharedObject(z.object({
         name: z.string()
@@ -28,12 +33,17 @@ test("create object", async () => {
 })
 
 test("update object", async () => {
-    const doc = new SharedDoc(z.object({
-        title: z.string(),
-        author: z.object({
-            name: z.string()
+    const doc = new SharedDoc({
+        collection: defineCollection({
+            name: "test",
+            schema: {
+                title: z.string(),
+                author: z.object({
+                    name: z.string()
+                })
+            }
         })
-    }))
+    })
 
     const author = new SharedObject(z.object({
         name: z.string()
@@ -52,15 +62,21 @@ test("update object", async () => {
 })
 
 test("nested object", async () => {
-    const doc = new SharedDoc(z.object({
-        title: z.string(),
-        author: z.object({
-            name: z.string(),
-            org: z.object({
-                name: z.string()
-            })
+
+    const doc = new SharedDoc({
+        collection: defineCollection({
+            name: "test",
+            schema: {
+                title: z.string(),
+                author: z.object({
+                    name: z.string(),
+                    org: z.object({
+                        name: z.string()
+                    })
+                })
+            }
         })
-    }))
+    })
 
     const author = new SharedObject(z.object({
         name: z.string(),

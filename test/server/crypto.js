@@ -2,16 +2,16 @@ import test, { before, after } from "node:test"
 import assert from "node:assert"
 import { Miniflare } from "miniflare";
 
-import { setContext } from "../src/server/context.js"
+import { setContext } from "../../src/server/context.js"
 
 // import "fake-indexeddb/auto";
 import cookie from "cookie"
 import jwt from "jsonwebtoken"
 
-import * as SessionService from "../src/server/services/session.js"
-import * as UserService from "../src/server/services/user.js"
-import * as CryptoService from "../src/server/services/crypto.js"
-import User from "../src/server/models/user.js"
+import * as SessionService from "../../src/server/services/session.js"
+import * as UserService from "../../src/server/services/user.js"
+import * as CryptoService from "../../src/server/services/crypto.js"
+import User from "../../src/server/models/user.js"
 
 var mf = false
 var user = false

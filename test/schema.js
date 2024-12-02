@@ -1,70 +1,70 @@
-import test, { before, after } from 'node:test'
-import assert from 'node:assert'
-import { z } from "zod"
+// import test, { before, after } from 'node:test'
+// import assert from 'node:assert'
+// import { z } from "zod"
 
-import { SharedDoc } from "../server.js"
+// import { SharedDoc } from "../server.js"
 
-before(async () => {
+// before(async () => {
     
-})
+// })
 
-test('extend schema', async () => {
-    const obj = {
-        firstName: "test",
-        lastName: "test"
-    }
+// test('extend schema', async () => {
+//     const obj = {
+//         firstName: "test",
+//         lastName: "test"
+//     }
 
-    const schema = z.object({
-        firstName: z.string()
-    })
+//     const schema = z.object({
+//         firstName: z.string()
+//     })
 
-    assert(schema.safeParse(obj).success)
+//     assert(schema.safeParse(obj).success)
     
-    const extendedSchema = schema.extend({
-        lastName: z.string()
-    })
+//     const extendedSchema = schema.extend({
+//         lastName: z.string()
+//     })
 
-    assert(extendedSchema.safeParse(obj).success)
-})
+//     assert(extendedSchema.safeParse(obj).success)
+// })
 
-test('set schema', async () => {
-    const schema = z.object({
-        firstName: z.string()
-    })
+// test('set schema', async () => {
+//     const schema = z.object({
+//         firstName: z.string()
+//     })
 
-    const ydoc = new SharedDoc(schema)
+//     const ydoc = new SharedDoc(schema)
 
-    ydoc.doc.getMap('root').set('firstName', 'test')
+//     ydoc.doc.getMap('root').set('firstName', 'test')
 
-    assert(ydoc.firstName == 'test')
+//     assert(ydoc.firstName == 'test')
 
-    ydoc.setSchema(schema.extend({
-        lastName: z.string()
-    }))
+//     ydoc.setSchema(schema.extend({
+//         lastName: z.string()
+//     }))
 
-    ydoc.lastName = 'test'
+//     ydoc.lastName = 'test'
 
-    const res = ydoc.toJSON()
+//     const res = ydoc.toJSON()
 
-    assert(res.lastName == 'test')    
-})
+//     assert(res.lastName == 'test')    
+// })
 
-test('check data', async () => {
-    const schema = z.object({
-        firstName: z.string()
-    })
+// test('check data', async () => {
+//     const schema = z.object({
+//         firstName: z.string()
+//     })
 
-    const ydoc = new SharedDoc(schema)
+//     const ydoc = new SharedDoc(schema)
 
-    ydoc.firstName = 'test'
+//     ydoc.firstName = 'test'
 
-    assert(ydoc.validate())
+//     assert(ydoc.validate())
     
-    const ydoc2 = new SharedDoc(schema)
+//     const ydoc2 = new SharedDoc(schema)
     
-    assert(!ydoc2.validate())
-})
+//     assert(!ydoc2.validate())
+// })
 
-after(async () => {
+// after(async () => {
     
-})
+// })

@@ -61,12 +61,11 @@ import assert from 'node:assert'
 import { z } from "zod"
 
 import { Miniflare } from "miniflare";
-import { setContext } from "../src/server/context.js"
+import { setContext } from "../../src/server/context.js"
 import jwt from "jsonwebtoken"
-import * as CryptoService from "../src/server/services/crypto.js"
+import * as CryptoService from "../../src/server/services/crypto.js"
 
-import { SharedDoc } from "../server.js"
-import { SharedDocSchema } from '../src/core/schemas.js'
+import { SharedDoc, defineCollection } from "../../server.js"
 
 var mf = false
 
@@ -87,7 +86,12 @@ before(async () => {
 })
 
 test('add member', async () => {
-    const doc = new SharedDoc(SharedDocSchema)
+    const doc = new SharedDoc({
+        collection: defineCollection({
+            name: 'test',
+            schema: {}
+        })
+    })
 
     assert(doc.getMembers().length == 0)
     
@@ -121,7 +125,13 @@ test('add member', async () => {
 })
 
 test('remove member', async () => {
-    const doc = new SharedDoc(SharedDocSchema)
+    const doc = new SharedDoc({
+        collection: defineCollection({
+            name: 'test',
+            schema: {}
+        })
+    })
+
     const keyPair = await CryptoService.create({
         doc: {
             uuid: 'test'
@@ -143,5 +153,5 @@ test('remove member', async () => {
 })
 
 after(async () => {
-    
+    await mf.dispose();
 })

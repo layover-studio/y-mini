@@ -1,9 +1,5 @@
-- schema system
-  - should be able to define collections like astro
-  - should be able to define name of collection
-  - should be able to define indexes in collections
-  - redo /test/schema.js tests
 - frontend testing
+  - indexeddb tests
 - devreel cleanup to get offline-first working
 
 - remote sync

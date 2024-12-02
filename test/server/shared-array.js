@@ -3,15 +3,21 @@ import assert from "node:assert"
 
 import { z } from "zod";
 
-import { SharedDoc, SharedObject, SharedArray } from "../server.js"
+import { SharedDoc, SharedObject, SharedArray, defineCollection } from "../../server.js"
 
 test("create shared array", async () => {
-    const doc = new SharedDoc(z.object({
-        username: z.string(),
-        authors: z.array(z.object({
-            name: z.string()
-        }))
-    }))
+
+    const doc = new SharedDoc({
+        collection: defineCollection({
+            name: "test",
+            schema: {
+                username: z.string(),
+                authors: z.array(z.object({
+                    name: z.string()
+                }))
+            }
+        })
+    })
 
     const author = new SharedObject(z.object({
         name: z.string()

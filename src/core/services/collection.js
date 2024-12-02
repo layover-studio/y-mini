@@ -13,7 +13,7 @@ const SharedDocSchema = z.object({
     isDeleted: z.boolean()
 })
 
-let collections = false 
+let collections = {} 
 
 export function parseKeys (schema) {
     if (
@@ -39,16 +39,18 @@ export function parseKeys (schema) {
 }
 
 export function defineCollection(collection){
-    const schema = SharedDocSchema.extend({
-        ...collection.schema
-    })
-    
-    collections[collection.name] = {
+    const schema = SharedDocSchema.extend(collection.schema)
+
+    const newCollection = {
         name: collection.name,
         indexes: collection.indexes ?? "++uuid",
         schema,
         props: parseKeys(schema)
     }
+    
+    collections[collection.name] = newCollection
+
+    return newCollection
 }
 
 export function reference(collectionName){

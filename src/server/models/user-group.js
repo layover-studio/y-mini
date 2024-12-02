@@ -8,7 +8,7 @@ import { getCollection } from "../../core/services/collection.js"
 class UserGroup extends SharedDoc {
     constructor (args) {
         super({
-            collection: getCollection('user')
+            collection: getCollection('userGroup')
         })
 
         if(args) {
