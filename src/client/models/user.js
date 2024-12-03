@@ -4,9 +4,7 @@ import SharedDoc from "./shared-doc.js"
 
 import { getCollection } from "../../core/services/collection.js"
 
-import * as UserService from "../services/user.js"
-
-class UserServer extends SharedDoc {
+class User extends SharedDoc {
     constructor(args){
 
         super({
@@ -23,13 +21,8 @@ class UserServer extends SharedDoc {
     }
 
     async save(){
-        const state = await this.export()
-
-        return UserService.upsert({
-            ...this.toJSON(),
-            state
-        })
+        return SharedDoc.upsert(this)
     }
 }
 
-export default UserServer
+export default User

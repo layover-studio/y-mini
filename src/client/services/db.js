@@ -8,8 +8,9 @@ export function db(){
 
         // TODO: read schema definition
         db_i.version(1).stores({
-            animations: '++uuid, name, organization',
-            organizations: '++uuid, name'
+            animation: '++uuid, name, organization',
+            user: '++uuid',
+            userGroup: '++uuid, name'
         });
     }
 

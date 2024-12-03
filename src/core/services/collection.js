@@ -13,7 +13,7 @@ const SharedDocSchema = z.object({
     isDeleted: z.boolean()
 })
 
-let collections = {} 
+export let collections = {} 
 
 export function parseKeys (schema) {
     if (

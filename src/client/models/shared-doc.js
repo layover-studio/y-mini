@@ -38,33 +38,35 @@ class SharedDoc extends SD {
         return SharedDoc.remove(this)
     }
 
-    static async findOne(uid){
-        const res = await db()[doc.schema.name].where("uuid").equals(uid).limit(1).first()
+    // TODO: add to collection method
+    // static async findOne(uid){
+    //     const res = await db()[doc.collection.schema.name].where("uuid").equals(uid).limit(1).first()
 
-        if(!res) {
-            return false
-        }
+    //     if(!res) {
+    //         return false
+    //     }
 
-        return res.state
-    }
+    //     return res.state
+    // }
 
-    static async findAll(){
-        const res = await db()[doc.schema.name].toArray()
+    // static async findAll(){
+    //     const res = await db()[doc.collection.schema.name].toArray()
     
-        return res.map(org => org.state)
-    }
+    //     return res.map(org => org.state)
+    // }
     
 
     static async upsert (doc) {
-        const indexes = doc.getIndexes()
+        // const indexes = doc.getIndexes()
+        const indexes = ['uuid']
         let indexed_data = {}
         const data = doc.toJSON()
 
-        for(index in indexes){
+        for(const index of indexes){
             indexed_data[index] = data[index] 
         }
 
-        return db()[doc.schema.name].put({
+        return db()[doc.collection.name].put({
             ...indexed_data,
             state: doc.export()
         }, doc.uuid)
@@ -73,7 +75,7 @@ class SharedDoc extends SD {
     static remove (doc) {
         // TODO: mark organization doc as deleted
     
-        return db()[doc.schema.name].delete(doc.uuid)
+        return db()[doc.collection.schema.name].delete(doc.uuid)
     }
 }
 
