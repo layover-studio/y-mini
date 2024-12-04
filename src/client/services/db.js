@@ -1,17 +1,20 @@
 import Dexie from 'dexie';
 
+import { collections } from "../../core/services/collection.js"
+
 export let db_i = false 
 
 export function db(){
     if(!db_i) {
         db_i = new Dexie('devreel');
 
-        // TODO: read schema definition
-        db_i.version(1).stores({
-            user: '++uuid',
-            animations: '++uuid, name, organization',
-            organizations: '++uuid, name'
-        });
+        let stores = {}
+
+        for(const c in collections){
+            stores[c] = collections[c].indexes
+        }
+
+        db_i.version(1).stores(stores);
     }
 
     return db_i
