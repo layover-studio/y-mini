@@ -75,7 +75,7 @@ class SharedDoc extends SD {
     static remove (doc) {
         // TODO: mark organization doc as deleted
     
-        return db()[doc.collection.schema.name].delete(doc.uuid)
+        return db()[doc.collection.name].delete(doc.uuid)
     }
 }
 

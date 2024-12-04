@@ -1,5 +1,3 @@
-- frontend testing
-  - indexeddb tests
 - devreel cleanup to get offline-first working
 
 - remote sync
