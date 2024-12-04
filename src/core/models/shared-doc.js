@@ -37,6 +37,7 @@ class SharedDoc {
             },
             set: function(target, prop, value, receiver) {
                 // console.log(target.properties, prop)
+                // console.log(target.collection)
         
                 if(target.collection.props.includes(prop)){
                     // if(target.schema) {

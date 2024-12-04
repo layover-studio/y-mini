@@ -8,4 +8,5 @@ export { z } from "zod"
 export { default as UserGroup } from "./src/client/models/user-group.js"
 export { default as User } from "./src/client/models/user.js"
 
-export { UserCollection, UserGroupCollection } from "./src/core/schemas.js"
+export { UserCollection, UserGroupCollection } from "./src/core/config.js"
+export { UserSchema, UserGroupSchema } from "./src/core/schemas.js"

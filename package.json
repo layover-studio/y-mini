@@ -6,6 +6,10 @@
   "browser": "./client.js",
   "type": "module",
   "exports": {
+    ".": {
+      "node": "./server.js",
+      "browser": "./client.js"
+    },
     "./client": "./client.js",
     "./server": "./server.js"
   },

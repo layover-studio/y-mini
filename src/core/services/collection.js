@@ -1,17 +1,6 @@
 import { z } from "zod"
 
-const SharedDocSchema = z.object({
-    uuid: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    members: z.string().optional(),
-    _prelim_acl: z.array(z.object({
-        user: z.string(),
-        role: z.string(),
-        action: z.string()
-    })),
-    isDeleted: z.boolean()
-})
+import { SharedDocSchema } from "../schemas.js"
 
 export let collections = {} 
 
