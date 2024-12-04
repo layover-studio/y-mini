@@ -24,6 +24,6 @@ export const UserGroupCollection = defineCollection({
     schema: {
         name: z.string(),
         isAnonymous: z.boolean(),
-        scenes: z.array(z.string())
+        // scenes: z.array(z.string())
     }
 });

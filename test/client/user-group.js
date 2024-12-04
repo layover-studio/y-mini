@@ -39,33 +39,33 @@ test("find organization by uid", async () => {
     assert(org.uuid == uuid)
 })
 
-test("add scenes", async () => {
-    const organization = new UserGroup({
-        name: "test"
-    })
+// test("add scenes", async () => {
+//     const organization = new UserGroup({
+//         name: "test"
+//     })
 
-    assert(organization.scenes.length == 0)
+//     assert(organization.scenes.length == 0)
     
-    organization.addScene({ uuid: "test" })
+//     organization.addScene({ uuid: "test" })
     
-    assert(organization.scenes.length == 1)
-})
+//     assert(organization.scenes.length == 1)
+// })
 
-test("remove scenes", async () => {
-    const organization = new UserGroup({
-        name: "test"
-    })
+// test("remove scenes", async () => {
+//     const organization = new UserGroup({
+//         name: "test"
+//     })
 
-    assert(organization.scenes.length == 0)
+//     assert(organization.scenes.length == 0)
     
-    organization.addScene({ uuid: "test" })
+//     organization.addScene({ uuid: "test" })
     
-    assert(organization.scenes.length == 1)
+//     assert(organization.scenes.length == 1)
     
-    organization.removeScene({ uuid: "test" })
+//     organization.removeScene({ uuid: "test" })
     
-    assert(organization.scenes.length == 0)
-})
+//     assert(organization.scenes.length == 0)
+// })
 
 test("change org name", async () => {    
     let data = await getCollection('userGroup').where("uuid").equals(uuid).limit(1).first()
