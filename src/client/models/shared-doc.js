@@ -58,10 +58,14 @@ class SharedDoc extends SD {
 
     static async upsert (doc) {
         // const indexes = doc.getIndexes()
-        const indexes = ['uuid']
+        const indexes = doc.collection.indexes.split(',').map(i => {
+            if(i == '++uuid') return 'uuid'
+
+            return i.replace(/ /g,"")
+        })
         let indexed_data = {}
         const data = doc.toJSON()
-
+        
         for(const index of indexes){
             indexed_data[index] = data[index] 
         }
