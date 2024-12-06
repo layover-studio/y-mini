@@ -1,15 +1,17 @@
 import { Hono } from 'hono'
-// import { cors } from 'hono/cors'
-// import { HTTPException } from 'hono/http-exception'
-// import {
-// 	getCookie
-//   } from 'hono/cookie'
-// //   import { serve } from '@hono/node-server'
+import { cors } from 'hono/cors'
+import { HTTPException } from 'hono/http-exception'
+import {
+	getCookie
+  } from 'hono/cookie'
+//   import { serve } from '@hono/node-server'
 // import { verifyRequestOrigin } from "lucia";
-// // import { WebSocketServer } from 'ws'
-// import { DurableObject } from "cloudflare:workers";
+// import { WebSocketServer } from 'ws'
+import { DurableObject } from "cloudflare:workers";
 
-// import AuthController from './src/controllers/auth.js'
+import AuthController from './controllers/auth.js'
+
+import { setContext } from './context.js';
 // import UserAPI from './src/controllers/api/user.js'
 // import PaymentAPI from './src/controllers/api/payment.js'
 // import PaymentWebhook from './src/controllers/webhook/payment.js'
@@ -31,42 +33,44 @@ server.post('/ping', async (ctx) => {
 	return ctx.json({ ok: true, result: 'PONG' })
 })
 
-// server.notFound((c) => {
-// 	throw new HTTPException(404, { 
-// 		ok: false,
-// 		status: 404,
-// 		message: "API endpoint not found" 
-// 	})
-// })
+server.notFound((c) => {
+	throw new HTTPException(404, { 
+		ok: false,
+		status: 404,
+		message: "API endpoint not found" 
+	})
+})
 
-// server.onError((err, ctx) => {
-// 	console.log(err)
+server.onError((err, ctx) => {
+	console.log(err)
 
-// 	return ctx.json({
-// 		ok: false,
-// 		error: err.message || err.toString() 
-// 	}, err.status || 500)
-// })
+	return ctx.json({
+		ok: false,
+		error: err.message || err.toString() 
+	}, err.status || 500)
+})
 
-// // server.use(cors({
-// // 	origin: [
-// // 		'https://devreel.app', 
-// // 		'http://localhost:4321',
-// // 	],
-// // 	credentials: true
-// // }))
+// server.use(cors({
+// 	origin: [
+// 		'https://devreel.app', 
+// 		'http://localhost:4321',
+// 	],
+// 	credentials: true
+// }))
 
-// server.use(async (ctx, next) => {
-//     try {
-// 		await next()
-// 	} catch (err) {
-// 		throw new HTTPException(err.status || 500, { 
-// 			ok: false,
-// 			status: err.status || 500,
-// 			error: err.message || err.toString() 
-// 		})
-// 	}
-// })
+server.use(async (ctx, next) => {
+    try {
+		setContext(ctx.env)
+
+		await next()
+	} catch (err) {
+		throw new HTTPException(err.status || 500, { 
+			ok: false,
+			status: err.status || 500,
+			error: err.message || err.toString() 
+		})
+	}
+})
 
 // server.get('/cookie', async (ctx) => {
 // 	const sessionId = getCookie(ctx, 'session')
@@ -76,7 +80,7 @@ server.post('/ping', async (ctx) => {
 // 	return ctx.json({ ok: true })
 // })
 
-// server.route('/', AuthController)
+server.route('/', AuthController)
 // // server.route('/waitlist', WaitlistController)
 // // server.route('/webhook/payment', PaymentWebhookController)
 
@@ -114,42 +118,42 @@ server.post('/ping', async (ctx) => {
 // server.route('/webhook/payment', PaymentWebhook)
 // // server.route('/api/payment', PaymentApiController)
 
-// server.get('/websocket', async (ctx) => {
-//     const upgradeHeader = ctx.req.header('Upgrade');
-//     // console.log(upgradeHeader)
+server.get('/websocket', async (ctx) => {
+    const upgradeHeader = ctx.req.header('Upgrade');
+    // console.log(upgradeHeader)
 
-//     if (!upgradeHeader || upgradeHeader !== 'websocket') {
-//         return new Response('Durable Object expected Upgrade: websocket', { status: 426 });
-//     }
+    if (!upgradeHeader || upgradeHeader !== 'websocket') {
+        return new Response('Durable Object expected Upgrade: websocket', { status: 426 });
+    }
 
 
-//     let id = ctx.env.WEBSOCKET_MANAGER.idFromName("foo");
-//     let stub = ctx.env.WEBSOCKET_MANAGER.get(id);
+    let id = ctx.env.WEBSOCKET_MANAGER.idFromName("foo");
+    let stub = ctx.env.WEBSOCKET_MANAGER.get(id);
 
-//     return stub.fetch(ctx.req.raw);
-// })
+    return stub.fetch(ctx.req.raw);
+})
 
-// export class WebSocketServer extends DurableObject {
-// 	async fetch(request) {
-// 	  const webSocketPair = new WebSocketPair();
-// 	  const [client, server] = Object.values(webSocketPair);
+export class WebSocketServer extends DurableObject {
+	async fetch(request) {
+	  const webSocketPair = new WebSocketPair();
+	  const [client, server] = Object.values(webSocketPair);
   
-// 	  this.ctx.acceptWebSocket(server);
+	  this.ctx.acceptWebSocket(server);
   
-// 	  return new Response(null, {
-// 		status: 101,
-// 		webSocket: client,
-// 	  });
-// 	}
+	  return new Response(null, {
+		status: 101,
+		webSocket: client,
+	  });
+	}
   
-// 	async webSocketMessage(ws, message) {
-// 	  ws.send('PONG');
-// 	}
+	async webSocketMessage(ws, message) {
+	  ws.send('PONG');
+	}
   
-// 	async webSocketClose(ws, code, reason, wasClean) {
-// 	  ws.close(code, "Durable Object is closing WebSocket");
-// 	}
-//   }
+	async webSocketClose(ws, code, reason, wasClean) {
+	  ws.close(code, "Durable Object is closing WebSocket");
+	}
+  }
 
 // const LaybackServer = new Proxy(server, {})
 

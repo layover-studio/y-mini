@@ -76,6 +76,10 @@ class SharedArray {
         return this.array.length
     }
 
+    map (callback) {
+        return this.array.map(callback)
+    }
+
     clone () {
         return this.array.clone()
     }

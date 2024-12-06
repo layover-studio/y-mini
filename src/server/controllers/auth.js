@@ -1,22 +1,21 @@
 import { Hono } from 'hono'
 import { getCookie, setCookie } from "hono/cookie";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuid } from "uuid";
 import jwt from "jsonwebtoken"
 
-import auth from "../services/auth.js";
-
 import { generateState } from "arctic";
-import { generateId } from "lucia";
 import { github } from "../services/github.js";
 
 import * as CryptoService from "../services/crypto.js"
 import * as UserService from "../services/user.js"
+import * as SessionService from "../services/session.js"
+import User from "../models/user.js"
 
 const app = new Hono()
 
 app.get('/login/github', async ctx => {
     const state = generateState();
-	const url = await github().createAuthorizationURL(state);
+	const url = await github().createAuthorizationURL(state, ["user:email"]);
 	
 	setCookie(ctx, "github_oauth_state", state, {
 		path: "/",
@@ -48,7 +47,7 @@ app.get('/login/github/callback', async ctx => {
 			headers: {
 				"X-GitHub-Api-Version":"2022-11-28",
 				"Accept": "application/vnd.github+json",
-				"Authorization": `Bearer ${tokens.accessToken}`,
+				"Authorization": `Bearer ${tokens.accessToken()}`,
 				"User-Agent": "devreel"
 			}
 		})
@@ -57,18 +56,20 @@ app.get('/login/github/callback', async ctx => {
 		let existingUser = await UserService.findOneByGithubId(githubUser.id ?? null)
 			
 		if (!existingUser) {		
-			existingUser = await UserService.create({
-				id: generateId(15),
+			existingUser = new User({
+				uuid: uuid(),
 				github_id: githubUser.id,
 				username: githubUser.login,
 				email: githubUser.email,
-				avatar_url: githubUser.avatar_url
+				avatar_url: githubUser.avatar_url,
 			})
+
+			await existingUser.save()
 		}
 		
-		const session = await auth().createSession(existingUser.id, {});
+		const session = await SessionService.create(existingUser);
 
-		setCookie(ctx, "session", session.id, {
+		setCookie(ctx, "session", session.uuid, {
 			path: "/",
 			secure: true,
 			httpOnly: true,

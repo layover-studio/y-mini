@@ -9,7 +9,7 @@ import db from "./db.js"
 
 export function createTable () {
     return db().prepare(`
-        CREATE TABLE IF NOT EXISTS user (
+        CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY,
             uuid VARCHAR(36) UNIQUE,
             github_id VARCHAR(255) UNIQUE,
@@ -26,7 +26,7 @@ export function createTable () {
 
 export async function create (args) {
     const res = await db().prepare(`
-        INSERT INTO user 
+        INSERT INTO users 
         (uuid, github_id, username, email, avatar_url, state) 
         VALUES 
         (?, ?, ?, ?, ?, ?);
@@ -52,7 +52,7 @@ export async function create (args) {
 
 export async function findOneById (id) {
     const res = await db().prepare(`
-        SELECT * FROM user WHERE id = ? LIMIT 1;
+        SELECT * FROM users WHERE id = ? LIMIT 1;
     `)
     .bind(id)
     .first()
@@ -69,7 +69,7 @@ export async function findOneById (id) {
 
 export async function findOneByGithubId (id) {
     const res = await db().prepare(`
-        SELECT * FROM user WHERE github_id = ? LIMIT 1;
+        SELECT * FROM users WHERE github_id = ? LIMIT 1;
     `)
     .bind(id)
     .first()
@@ -86,7 +86,7 @@ export async function findOneByGithubId (id) {
 
 export async function findOneByEmail (id) {
     const res = await db().prepare(`
-        SELECT * FROM user WHERE email = ? LIMIT 1;
+        SELECT * FROM users WHERE email = ? LIMIT 1;
     `)
     .bind(id)
     .first()
@@ -103,7 +103,7 @@ export async function findOneByEmail (id) {
 
 export async function findOne (uid) {
     const res = await db().prepare(`
-        SELECT * FROM user WHERE uuid = ? LIMIT 1;
+        SELECT * FROM users WHERE uuid = ? LIMIT 1;
     `)
     .bind(uid)
     .first()
@@ -120,7 +120,7 @@ export async function findOne (uid) {
 
 export function update (user) {
     return db().prepare(`
-        UPDATE user
+        UPDATE users
         SET 
         username = ?,
         email = ?,
@@ -150,7 +150,7 @@ export async function upsert (user) {
 
 export function remove (user) {
     return db().prepare(`
-        DELETE FROM user WHERE uid = ?;
+        DELETE FROM users WHERE uid = ?;
     `)
     .run(user.uuid)
 }

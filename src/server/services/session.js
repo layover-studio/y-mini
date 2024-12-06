@@ -10,7 +10,7 @@ export function createTable () {
             uuid VARCHAR(36) UNIQUE,
             expires_at INTEGER NOT NULL,
             user_id INTEGER NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES user(id)
+            FOREIGN KEY (user_id) REFERENCES users(id)
         );
     `)
     .run()
@@ -19,7 +19,7 @@ export function createTable () {
 export async function create (user) {
     const u = await UserService.findOne(user.uuid)
 
-    const id = await db().prepare(`SELECT id FROM user WHERE uuid = ? LIMIT 1`).bind(u.uuid).first('id')
+    const id = await db().prepare(`SELECT id FROM users WHERE uuid = ? LIMIT 1`).bind(u.uuid).first('id')
 
     const uid = uuid()
 
@@ -42,7 +42,7 @@ export async function create (user) {
 export async function findOneByUser (user) {
     const u = await UserService.findOne(user.uuid)
 
-    const id = await db().prepare(`SELECT id FROM user WHERE uuid = ? LIMIT 1`).bind(u.uuid).first('id')
+    const id = await db().prepare(`SELECT id FROM users WHERE uuid = ? LIMIT 1`).bind(u.uuid).first('id')
 
     return db().prepare(`
         SELECT * FROM session WHERE user_id = ? LIMIT 1;
