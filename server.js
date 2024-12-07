@@ -7,7 +7,7 @@ export { z } from "zod"
 
 export { default as UserGroup } from "./src/server/models/user-group.js"
 export { default as User } from "./src/server/models/user.js"
-export { default as LaybackServer, WebSocketServer } from "./src/server/index.js"
+// export { default as LaybackServer, WebSocketServer } from "./src/server/index.js"
 
 export { UserCollection, UserGroupCollection } from "./src/core/config.js"
 export { UserSchema, UserGroupSchema } from "./src/core/schemas.js"

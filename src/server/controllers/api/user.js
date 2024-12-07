@@ -18,6 +18,17 @@ app.get('/', async ctx => {
     })
 })
 
+app.get('/diff', async ctx => {
+    const session = ctx.data.session 
+
+    const user = await UserService.findOneById(session.userId)
+
+    return ctx.json({
+        ok: true, 
+        user 
+    })
+})
+
 app.get('/public-key', async ctx => {
     const session = ctx.data.session
 

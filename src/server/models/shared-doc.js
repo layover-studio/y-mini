@@ -65,6 +65,8 @@ class SharedDoc extends SD {
             
             const new_acl = jwt.sign({data: tmp}, keyPair.privateKey, { algorithm: 'ES384' });
 
+            // TODO: update users_docs table
+
             this.members = new_acl
         } catch (err) {
             console.error(err)

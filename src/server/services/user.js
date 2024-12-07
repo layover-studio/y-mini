@@ -7,37 +7,16 @@ import User from "../models/user.js"
 
 import db from "./db.js"
 
-export function createTable () {
-    return db().prepare(`
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY,
-            uuid VARCHAR(36) UNIQUE,
-            github_id VARCHAR(255) UNIQUE,
-            username VARCHAR(255),
-            email VARCHAR(255),
-            avatar_url VARCHAR(255),
-            hasPaid BOOLEAN DEFAULT FALSE,
-            role VARCHAR(255) DEFAULT "USER",
-            state BLOB
-        );
-    `)
-    .run()
-}
-
 export async function create (args) {
     const res = await db().prepare(`
         INSERT INTO users 
-        (uuid, github_id, username, email, avatar_url, state) 
+        (uuid, email) 
         VALUES 
-        (?, ?, ?, ?, ?, ?);
+        (?, ?);
     `)
     .bind(
-        args.uuid, 
-        args.github_id, 
-        args.username,
-        args.email, 
-        args.avatar_url,
-        args.state
+        args.uuid,
+        args.email
     )
     .run()
 

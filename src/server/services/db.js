@@ -1,3 +1,5 @@
+
+import fs from "node:fs/promises"
 import { context } from "../context.js"
 
 // import * as UserService from "./user.js"
@@ -11,16 +13,14 @@ export function db () {
     return context.DB;
 }
 
-// export function destroyDatabase(){
-//     return fs.rm(path)
-// }
+export function destroyDatabase(){
+    return fs.rm(path)
+}
 
-// export async function createDatabase(){
-//     // await UserService.createTable()
-//     // await SessionService.createTable()
-//     await PaymentService.createTable()
-//     await SharedDoc.createTable()
-//     await CryptoService.createTable()
-// }
+export async function createDatabase(script_path){
+    const file = await fs.readFile(script_path, 'utf-8')
+
+    return db().prepare(file).run()
+}
 
 export default db

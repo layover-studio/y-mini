@@ -1,13 +1,15 @@
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
     uuid VARCHAR(36) UNIQUE,
-    github_id VARCHAR(255) UNIQUE,
-    username VARCHAR(255),
     email VARCHAR(255),
-    avatar_url VARCHAR(255),
-    hasPaid BOOLEAN DEFAULT FALSE,
-    role VARCHAR(255) DEFAULT "USER",
     state BLOB
+);
+
+CREATE TABLE IF NOT EXISTS github_users (
+    id INTEGER PRIMARY KEY,
+    github_id VARCHAR(255) UNIQUE,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS session (
@@ -15,7 +17,7 @@ CREATE TABLE IF NOT EXISTS session (
     uuid VARCHAR(36) UNIQUE,
     expires_at INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS 
@@ -28,7 +30,7 @@ paymentSession (
     content TEXT,
     user_id INTEGER NOT NULL,
     website VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS 
@@ -47,4 +49,12 @@ CREATE TABLE IF NOT EXISTS docs (
     uuid VARCHAR(36) UNIQUE,
     type VARCHAR(36),
     state BLOB
+);
+
+CREATE TABLE IF NOT EXISTS users_docs (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    doc_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (doc_id) REFERENCES docs(id)
 );
