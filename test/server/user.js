@@ -45,6 +45,12 @@ test('find a user by id', async () => {
     assert(user.uuid == uuid)
 })
 
+test('find a user by github id', async () => {
+    const user = await UserService.findOneByGithubId('ok')
+
+    assert(user.uuid == uuid)
+})
+
 test('update user doc', async () => {
     let user = await UserService.findOne(uuid)
 

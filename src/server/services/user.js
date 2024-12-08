@@ -1,118 +1,171 @@
-// import { v4 as uuid } from 'uuid';
-// import { generateId } from "lucia";
-
-import * as Y from "yjs"
+import { v4 as uid } from 'uuid';
 
 import User from "../models/user.js"
 
 import db from "./db.js"
 
 export async function create (args) {
-    const res = await db().prepare(`
+    const uuid = args.uuid ?? uid()
+    
+    const user = await db().prepare(`
         INSERT INTO users 
         (uuid, email) 
         VALUES 
         (?, ?);
     `)
     .bind(
-        args.uuid,
+        uuid,
         args.email
     )
     .run()
 
-    // TODO: generate key pair + sign data property
+    if(args.github_id){
+        await db().prepare(`
+            INSERT INTO github_users 
+            (github_id, user_id) 
+            VALUES 
+            (?, ?);
+        `)
+        .bind(
+            args.github_id,
+            user.meta.last_row_id
+        )
+        .run()
+    }
 
-    // const keyPair = await CryptoService.create({
-    //     user: existingUser
-    // })
+    const doc = await db().prepare(`
+        INSERT INTO docs 
+        (uuid, type, state) 
+        VALUES 
+        (?, ?, ?);
+    `)
+    .bind(
+        uid(),
+        "USER",
+        args.state
+    )
+    .run()
 
-    return findOne(args.uuid)
+    await db().prepare(`
+        INSERT INTO users_docs 
+        (user_id, doc_id) 
+        VALUES 
+        (?, ?);
+    `)
+    .bind(
+        user.meta.last_row_id,
+        doc.meta.last_row_id
+    )
+    .run()
+
+    return findOne(uuid)
 }
 
 export async function findOneById (id) {
-    const res = await db().prepare(`
-        SELECT * FROM users WHERE id = ? LIMIT 1;
+    const state = await db().prepare(`
+        SELECT d.state 
+        FROM users_docs AS ud 
+        LEFT JOIN docs AS d ON d.id = ud.doc_id   
+        WHERE user_id = ? 
+        LIMIT 1;
     `)
     .bind(id)
-    .first()
+    .first("state")
 
-    if(!res){
+    if(!state){
         return false
     }
 
     const doc = new User()
-    doc.import(Buffer.from(res.state))
+    doc.import(Buffer.from(state))
 
 	return doc;
 }
 
 export async function findOneByGithubId (id) {
-    const res = await db().prepare(`
-        SELECT * FROM users WHERE github_id = ? LIMIT 1;
+    const user_id = await db().prepare(`
+        SELECT user_id FROM github_users WHERE github_id = ? LIMIT 1;
     `)
     .bind(id)
-    .first()
+    .first("user_id")
 
-    if(!res){
+    if(!user_id){
         return false
     }
 
-    const doc = new User()
-    doc.import(Buffer.from(res.state))
-
-	return doc;
+	return findOneById(user_id);
 }
 
-export async function findOneByEmail (id) {
-    const res = await db().prepare(`
-        SELECT * FROM users WHERE email = ? LIMIT 1;
+export async function findOneByEmail (email) {
+    const state = await db().prepare(`
+        SELECT d.state 
+        FROM users AS u
+        LEFT JOIN users_docs AS ud ON ud.user_id = u.id
+        LEFT JOIN docs AS d ON d.id = ud.doc_id
+        WHERE u.email = ? LIMIT 1;
     `)
-    .bind(id)
-    .first()
+    .bind(email)
+    .first('state')
 
-    if(!res){
+    if(!state){
         return false
     }
 
     const doc = new User()
-    doc.import(Buffer.from(res.state))
+    doc.import(Buffer.from(state))
 
 	return doc;
 }
 
 export async function findOne (uid) {
-    const res = await db().prepare(`
-        SELECT * FROM users WHERE uuid = ? LIMIT 1;
+    const state = await db().prepare(`
+        SELECT d.state 
+        FROM users AS u
+        LEFT JOIN users_docs AS ud ON ud.user_id = u.id
+        LEFT JOIN docs AS d ON d.id = ud.doc_id
+        WHERE u.uuid = ? LIMIT 1;
     `)
     .bind(uid)
-    .first()
+    .first('state')
 
-    if(!res){
+    if(!state){
         return false
     }
 
     const doc = new User()
-    doc.import(Buffer.from(res.state))
+    doc.import(Buffer.from(state))
 
 	return doc;
 }
 
-export function update (user) {
+export async function findDoc(user){
+    const doc = await db().prepare(`
+        SELECT d.* 
+        FROM users AS u
+        LEFT JOIN users_docs AS ud ON ud.user_id = u.id
+        LEFT JOIN docs AS d ON d.id = ud.doc_id
+        WHERE u.uuid = ? LIMIT 1;
+    `)
+    .bind(user.uuid)
+    .first()
+
+    if(!doc) return false 
+
+    return doc
+}
+
+export async function update (user) {
+    const doc = await findDoc(user)
+
     return db().prepare(`
-        UPDATE users
+        UPDATE docs
         SET 
-        username = ?,
-        email = ?,
-        avatar_url = ?,
         state = ?
         WHERE uuid = ?;
     `)
     .bind(
-        user.username, 
-        user.email,
-        user.avatar_url,
         user.state,
-        user.uuid
+        doc.uuid
     )
     .run()
 }
@@ -127,9 +180,34 @@ export async function upsert (user) {
     return create(user)
 }
 
-export function remove (user) {
+export async function remove (user) {
+    const u = await db().prepare(`
+        SELECT * FROM users WHERE uuid = ?;
+    `)
+    .bind(user.uuid)
+    .first()
+
+    const doc_ids = await db().prepare(`
+        SELECT doc_id FROM users_docs WHERE user_id = ?;
+    `)
+    .bind(u.id)
+    .all()
+
+    await db().prepare(`
+        DELETE FROM docs WHERE id IN (?);
+    `)
+    .bind(doc_ids.results.join(', '))
+    .run()
+
+    await db().prepare(`
+        DELETE FROM users_docs WHERE user_id = ?;
+    `)
+    .bind(u.id)
+    .run()
+
     return db().prepare(`
         DELETE FROM users WHERE uid = ?;
     `)
-    .run(user.uuid)
+    .bind(user.uuid)
+    .run()
 }

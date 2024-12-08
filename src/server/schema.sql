@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
     uuid VARCHAR(36) UNIQUE,
-    email VARCHAR(255),
-    state BLOB
+    email VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS github_users (
