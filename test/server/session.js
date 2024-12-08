@@ -7,6 +7,7 @@ import { setContext } from "../../src/server/context.js"
 import * as SessionService from "../../src/server/services/session.js"
 import * as UserService from "../../src/server/services/user.js"
 import { User } from "../../server.js"
+import { createDatabase } from "../../src/server/services/db.js"
 
 var mf = false
 var user = false
@@ -25,8 +26,7 @@ before(async () => {
         DB: await mf.getD1Database("DB")
     })
 
-    await UserService.createTable()
-    await SessionService.createTable()
+    await createDatabase("./src/server/schema.sql")
 })
 
 test('create a new session', async () => {

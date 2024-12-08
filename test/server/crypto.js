@@ -12,6 +12,7 @@ import * as SessionService from "../../src/server/services/session.js"
 import * as UserService from "../../src/server/services/user.js"
 import * as CryptoService from "../../src/server/services/crypto.js"
 import User from "../../src/server/models/user.js"
+import { createDatabase } from "../../src/server/services/db.js"
 
 var mf = false
 var user = false
@@ -29,9 +30,7 @@ before(async () => {
         DB: await mf.getD1Database("DB")
     })
 
-    await UserService.createTable()
-    await SessionService.createTable()
-    await CryptoService.createTable()
+    await createDatabase("./src/server/schema.sql")
 });
 
 test("create key pair", async () => {

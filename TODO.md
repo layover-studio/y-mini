@@ -1,5 +1,3 @@
-- rewrite tests
-
 - should be able to ask backend for diffs (check what's available locally vs remote) 
   - endpoint + service function
   - when buildacl => add users_docs row

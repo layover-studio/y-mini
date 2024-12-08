@@ -3,19 +3,6 @@ import { v4 as uuid } from 'uuid';
 
 import * as UserService from "./user.js"
 
-export function createTable () {
-    return db().prepare(`
-        CREATE TABLE IF NOT EXISTS session (
-            id INTEGER PRIMARY KEY,
-            uuid VARCHAR(36) UNIQUE,
-            expires_at INTEGER NOT NULL,
-            user_id INTEGER NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        );
-    `)
-    .run()
-}
-
 export async function create (user) {
     const u = await UserService.findOne(user.uuid)
 

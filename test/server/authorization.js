@@ -63,6 +63,7 @@ import { z } from "zod"
 import { Miniflare } from "miniflare";
 import { setContext } from "../../src/server/context.js"
 import jwt from "jsonwebtoken"
+import { createDatabase } from "../../src/server/services/db.js"
 import * as CryptoService from "../../src/server/services/crypto.js"
 
 import { SharedDoc, defineCollection } from "../../server.js"
@@ -82,7 +83,7 @@ before(async () => {
         DB: await mf.getD1Database("DB")
     })
 
-    await CryptoService.createTable()
+    await createDatabase("./src/server/schema.sql")
 })
 
 test('add member', async () => {
