@@ -8,6 +8,21 @@ import SharedDoc from "../../models/shared-doc.js"
 
 const app = new Hono()
 
+app.get('/diff', async ctx => {
+    const { docs } = await ctx.req.json()
+
+    const session = ctx.data.session 
+
+    const user = await UserService.findOneById(session.user_id)
+
+    const remote_docs = await SharedDoc.findByUser(user)
+
+    return ctx.json({
+        ok: true,
+        docs: remote_docs.filter(x => !docs.includes(x))
+    })
+})
+
 app.post('/:uid/update', async ctx => {
     const { type } = await ctx.req.query()
     const uid = ctx.req.param('uid')

@@ -6,7 +6,13 @@ import * as UserService from "./user.js"
 export async function create (user) {
     const u = await UserService.findOne(user.uuid)
 
-    const id = await db().prepare(`SELECT id FROM users WHERE uuid = ? LIMIT 1`).bind(u.uuid).first('id')
+    const id = await db().prepare(`
+        SELECT u.id 
+        FROM users AS u
+        LEFT JOIN users_docs AS ud ON ud.user_id = u.id
+        LEFT JOIN docs AS d ON d.id = ud.doc_id
+        WHERE d.uuid = ? LIMIT 1;
+    `).bind(u.uuid).first('id')
 
     const uid = uuid()
 
@@ -29,7 +35,13 @@ export async function create (user) {
 export async function findOneByUser (user) {
     const u = await UserService.findOne(user.uuid)
 
-    const id = await db().prepare(`SELECT id FROM users WHERE uuid = ? LIMIT 1`).bind(u.uuid).first('id')
+    const id = await db().prepare(`
+        SELECT u.id 
+        FROM users AS u
+        LEFT JOIN users_docs AS ud ON ud.user_id = u.id
+        LEFT JOIN docs AS d ON d.id = ud.doc_id
+        WHERE d.uuid = ? LIMIT 1;    
+    `).bind(u.uuid).first('id')
 
     return db().prepare(`
         SELECT * FROM session WHERE user_id = ? LIMIT 1;

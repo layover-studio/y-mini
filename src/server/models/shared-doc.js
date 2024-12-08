@@ -78,18 +78,6 @@ class SharedDoc extends SD {
         return SharedDoc.remove(this)
     }
 
-    static createTable () {
-        return db().prepare(`
-            CREATE TABLE IF NOT EXISTS docs (
-                id INTEGER PRIMARY KEY,
-                uuid VARCHAR(36) UNIQUE,
-                type VARCHAR(36),
-                state BLOB
-            );
-        `)
-        .run()
-    }
-
     static async create (args) {
 
         // TODO: handle signed fields
@@ -126,6 +114,37 @@ class SharedDoc extends SD {
         }
     
         return res;
+    }
+
+    static async findByUser(user){
+        const user_id = await db()
+        .prepare(`
+            SELECT u.id 
+            FROM docs AS d 
+            LEFT JOIN users_docs AS ud ON ud.doc_id = d.id
+            LEFT JOIN users AS u ON u.id = ud.user_id 
+            WHERE d.uuid = ? 
+        `)
+        .bind(user.uuid)
+        .first('id')
+    
+        if(!user_id){
+            return false
+        }
+
+        const res = await db()
+        .prepare(`
+            SELECT d.uuid 
+            FROM docs AS d 
+            LEFT JOIN users_docs AS ud ON ud.doc_id = d.id 
+            WHERE ud.user_id = ? 
+        `)
+        .bind(user_id)
+        .all()
+
+        if(!res) return false
+    
+        return res.results.map(r => r.uuid);
     }
 
     static async update (args) {

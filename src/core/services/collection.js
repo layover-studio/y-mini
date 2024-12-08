@@ -49,3 +49,7 @@ export function reference(collectionName){
 export function getCollection(collectionName){
     return collections[collectionName]
 }
+
+export function listCollections(){
+    return Object.keys(collections)
+}

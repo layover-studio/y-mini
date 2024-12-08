@@ -40,7 +40,13 @@ export async function create(args){
 		cancel_url: `http://localhost:4321/payment/cancel`,
 	  });
 
-	  const id = await db().prepare(`SELECT id from users WHERE uuid = ? LIMIT 1`).bind(args.user.uuid).first('id') 
+	const id = await db().prepare(`
+		SELECT u.id 
+        FROM users AS u
+        LEFT JOIN users_docs AS ud ON ud.user_id = u.id
+        LEFT JOIN docs AS d ON d.id = ud.doc_id
+        WHERE d.uuid = ? LIMIT 1;	
+	`).bind(args.user.uuid).first('id') 
 
 	await db()
 	.prepare(`

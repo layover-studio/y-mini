@@ -1,8 +1,8 @@
 export { default as SharedDoc } from "./src/client/models/shared-doc.js"
 export { default as SharedObject } from "./src/core/models/shared-object.js"
 export { default as SharedArray } from "./src/core/models/shared-array.js"
-export { defineCollection } from "./src/core/services/collection.js"
-export { getCollection } from "./src/client/services/collection.js"
+export { defineCollection, listCollections } from "./src/core/services/collection.js"
+export { getCollection, listDocs } from "./src/client/services/collection.js"
 export { z } from "zod"
 
 export { default as UserGroup } from "./src/client/models/user-group.js"

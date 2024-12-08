@@ -14,7 +14,7 @@ export async function create (args) {
         (?, ?);
     `)
     .bind(
-        uuid,
+        uid(),
         args.email
     )
     .run()
@@ -40,7 +40,7 @@ export async function create (args) {
         (?, ?, ?);
     `)
     .bind(
-        uid(),
+        uuid,
         "USER",
         args.state
     )
@@ -123,7 +123,7 @@ export async function findOne (uid) {
         FROM users AS u
         LEFT JOIN users_docs AS ud ON ud.user_id = u.id
         LEFT JOIN docs AS d ON d.id = ud.doc_id
-        WHERE u.uuid = ? LIMIT 1;
+        WHERE d.uuid = ? LIMIT 1;
     `)
     .bind(uid)
     .first('state')
@@ -140,11 +140,9 @@ export async function findOne (uid) {
 
 export async function findDoc(user){
     const doc = await db().prepare(`
-        SELECT d.* 
-        FROM users AS u
-        LEFT JOIN users_docs AS ud ON ud.user_id = u.id
-        LEFT JOIN docs AS d ON d.id = ud.doc_id
-        WHERE u.uuid = ? LIMIT 1;
+        SELECT * 
+        FROM docs
+        WHERE uuid = ? LIMIT 1;
     `)
     .bind(user.uuid)
     .first()
@@ -155,7 +153,6 @@ export async function findDoc(user){
 }
 
 export async function update (user) {
-    const doc = await findDoc(user)
 
     return db().prepare(`
         UPDATE docs
@@ -165,7 +162,7 @@ export async function update (user) {
     `)
     .bind(
         user.state,
-        doc.uuid
+        user.uuid
     )
     .run()
 }
