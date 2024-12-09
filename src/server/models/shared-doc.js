@@ -24,10 +24,10 @@ class SharedDoc extends SD {
             
         const tmp = jwt.verify(acl, keyPair.publicKey, { algorithm: 'ES384' }).data
         
-        return tmp.filter(el => el.user == user.id && el.role == role).length > 0
+        return tmp.filter(el => el.user == user.uuid && el.role == role).length > 0
     }
 
-    buildAcl(keyPair){
+    async buildAcl (keyPair) {
         try {
             const acl = this.members ?? false
             
@@ -36,6 +36,15 @@ class SharedDoc extends SD {
             const _prelim_acl = this._prelim_acl.toJSON()
             const size = _prelim_acl.length
 
+            const doc_id = await db().prepare(`
+                SELECT id 
+                FROM docs
+                WHERE uuid = ? LIMIT 1;
+            `)
+            .bind(
+                this.uuid
+            )
+            .first('id')
             
             for(let i = 0 ; i < size ; i++){
                 const access_rule = _prelim_acl[i]
@@ -54,6 +63,28 @@ class SharedDoc extends SD {
                             break;
                     }
                 // }
+
+                const user_id = await db().prepare(`
+                    SELECT u.id 
+                    FROM users AS u
+                    LEFT JOIN users_docs AS ud ON ud.user_id = u.id
+                    LEFT JOIN docs AS d ON d.id = ud.doc_id
+                    WHERE d.uuid = ? LIMIT 1;
+                `)
+                .bind(
+                    access_rule.user
+                )
+                .first('id')
+
+                await db()
+                .prepare(`
+                    INSERT INTO users_docs (user_id, doc_id) VALUES (?, ?)
+                `)
+                .bind(
+                    user_id,
+                    doc_id
+                )
+                .run();
             }
 
             
@@ -65,7 +96,6 @@ class SharedDoc extends SD {
             
             const new_acl = jwt.sign({data: tmp}, keyPair.privateKey, { algorithm: 'ES384' });
 
-            // TODO: update users_docs table
 
             this.members = new_acl
         } catch (err) {
@@ -90,10 +120,11 @@ class SharedDoc extends SD {
     
         const res = await db()
         .prepare(`
-            INSERT INTO docs (uuid, state) VALUES (?, ?)
+            INSERT INTO docs (uuid, type, state) VALUES (?, ?, ?)
         `)
         .bind(
             args.uuid,
+            args.type ?? 'NULL',
             args.state
         )
         .run();

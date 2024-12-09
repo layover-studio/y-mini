@@ -66,9 +66,12 @@ import jwt from "jsonwebtoken"
 import { createDatabase } from "../../src/server/services/db.js"
 import * as CryptoService from "../../src/server/services/crypto.js"
 
-import { SharedDoc, defineCollection } from "../../server.js"
+import { SharedDoc, defineCollection, User } from "../../server.js"
 
 var mf = false
+var user = false
+var doc = false
+var keyPair = false
 
 before(async () => {
     mf = new Miniflare({
@@ -84,72 +87,63 @@ before(async () => {
     })
 
     await createDatabase("./src/server/schema.sql")
+
+    user = new User({
+        email: 'test@gmail.com'
+    }) 
+
+    await user.save()
 })
 
 test('add member', async () => {
-    const doc = new SharedDoc({
+    doc = new SharedDoc({
         collection: defineCollection({
             name: 'test',
             schema: {}
         })
     })
 
+    doc.uuid = 'test'
+
+    await doc.save()
+
     assert(doc.getMembers().length == 0)
     
-    const keyPair = await CryptoService.create({
+    keyPair = await CryptoService.create({
         doc: {
-            uuid: 'test'
+            uuid: doc.uuid
         }
     })
     
-
     doc.addMember({
-        user: "1",
+        user: user.uuid,
         role: "USER"
     })
     
     assert(doc._prelim_acl.toJSON().length == 1)
-    
 
-    doc.buildAcl(keyPair)
-
+    await doc.buildAcl(keyPair)
 
     const members = jwt.verify(doc.members, keyPair.publicKey, { algorithm: 'ES384' }).data
-    assert(members[0].user == "1" && members[0].role == "USER")
+
+    assert(members[0].user == user.uuid && members[0].role == "USER")
     
 
-    const res = doc.hasRight({ id: "1" }, "USER", keyPair)
+    const res = doc.hasRight({ uuid: user.uuid }, "USER", keyPair)
     assert(res)
     
-    const res2 = doc.hasRight({ id: "2" }, "USER", keyPair)
+    const res2 = doc.hasRight({ uuid: "doesntexist" }, "USER", keyPair)
     assert(!res2)
 })
 
 test('remove member', async () => {
-    const doc = new SharedDoc({
-        collection: defineCollection({
-            name: 'test',
-            schema: {}
-        })
-    })
-
-    const keyPair = await CryptoService.create({
-        doc: {
-            uuid: 'test'
-        }
-    })
-    doc.addMember({
-        user: "1",
-        role: "USER"
-    })
-    doc.buildAcl(keyPair)
     
     doc.removeMember({
-        id: "1"
+        uuid: user.uuid
     })
-    doc.buildAcl(keyPair)
+    await doc.buildAcl(keyPair)
 
-    const res = doc.hasRight({ id: "1" }, "USER", keyPair)
+    const res = doc.hasRight({ uuid: user.uuid }, "USER", keyPair)
     assert(!res)
 })
 

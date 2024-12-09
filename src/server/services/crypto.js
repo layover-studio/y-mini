@@ -86,6 +86,18 @@ export async function findOneByDoc(doc){
 	.first();
 }
 
+export async function getOneByDoc(doc) {
+  const kp = await findOneByDoc(doc)
+
+  if(!kp) {
+    return create({
+        doc
+    })
+  }
+
+  return kp
+}
+
 export async function remove (keyPair) {
     const res = await db()
     .prepare(`

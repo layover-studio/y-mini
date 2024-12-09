@@ -35,7 +35,7 @@ app.post('/:uid/update', async ctx => {
 
     const user = await UserService.findOneById(session.userId)
 
-    let doc = await DocsService.findOne({
+    let doc = await SharedDoc.findOne({
         type,
         uuid: uid
     })
@@ -43,7 +43,7 @@ app.post('/:uid/update', async ctx => {
     if(!doc) {
         doc = new SharedDoc()
 
-        await DocsService.create({
+        await SharedDoc.create({
             type,
             uuid: uid,
             state: await doc.export()
@@ -52,12 +52,14 @@ app.post('/:uid/update', async ctx => {
     } 
     
     doc.import(state)
+
+    const keyPair = await CryptoService.getOneByDoc({ uuid: uid })
     
-    await doc.buildAcl(user)
+    await doc.buildAcl(keyPair)
     
     const update = await doc.export()
     
-    await DocsService.update({
+    await SharedDoc.update({
         type,
         uuid: uid,
         state: update

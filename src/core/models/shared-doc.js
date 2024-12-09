@@ -98,7 +98,7 @@ class SharedDoc {
             return true
         }
 
-        this._prelim_acl.push([{ user: user.id, action: "remove" }])
+        this._prelim_acl.push([{ user: user.uuid, action: "remove" }])
     }
 
     // hasRight(user, role){
