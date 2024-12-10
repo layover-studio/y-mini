@@ -58,7 +58,7 @@ export function findOne (uuid) {
     .first()
 }
 
-export async function check(session){
+export function check(session){
     return session.expires_at > Date.now()
 }
 

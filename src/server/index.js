@@ -12,14 +12,14 @@ import { DurableObject } from "cloudflare:workers";
 import AuthController from './controllers/auth.js'
 
 import { setContext } from './context.js';
-// import UserAPI from './src/controllers/api/user.js'
-// import PaymentAPI from './src/controllers/api/payment.js'
-// import PaymentWebhook from './src/controllers/webhook/payment.js'
-// import DocsAPI from './src/controllers/api/docs.js'
 
-// import auth from './src/services/auth.js'
+import UserAPI from './src/controllers/api/user.js'
+import PaymentAPI from './src/controllers/api/payment.js'
+import PaymentWebhook from './src/controllers/webhook/payment.js'
+import DocsAPI from './src/controllers/api/docs.js'
 
-// import { setupWSConnection } from './src/websocket/utils.js'
+import * as SessionService from './src/services/session.js'
+import * as UserService from './src/services/user.js'
 
 const server = new Hono()
 
@@ -72,53 +72,48 @@ server.use(async (ctx, next) => {
 	}
 })
 
-// server.get('/cookie', async (ctx) => {
-// 	const sessionId = getCookie(ctx, 'session')
-
-// 	const { session, user } = await auth().validateSession(sessionId);
-
-// 	return ctx.json({ ok: true })
-// })
-
 server.route('/', AuthController)
 // // server.route('/waitlist', WaitlistController)
-// // server.route('/webhook/payment', PaymentWebhookController)
+// server.route('/webhook/payment', PaymentWebhookController)
 
-// server.use('/api/*', async (ctx, next) => {
-// 	const originHeader = ctx.req.header("Origin");
+server.use('/api/*', async (ctx, next) => {
+	const originHeader = ctx.req.header("Origin");
 	
-// 	const hostHeader = ["devreel.com", "localhost:8787", "localhost:4321"];
+	const hostHeader = ["devreel.com", "localhost:8787", "localhost:4321"];
 
-// 	if (!originHeader || !hostHeader || !verifyRequestOrigin(originHeader, hostHeader)) {
-// 		return new Response(null, {
-// 			status: 403
-// 		});
-// 	}
+	if (!originHeader || !hostHeader || !hostHeader.includes(originHeader)) {
+		return new Response(null, {
+			status: 403
+		});
+	}
 	
-// 	const sessionId = getCookie(ctx, "session")
+	const session_uuid = getCookie(ctx, "session")
 
-// 	const { session } = await auth().validateSession(sessionId);
+	const session = await SessionService.findOne(session_uuid);
+	const isValid = SessionService.check(session)
 
-// 	if (!session) {
-// 		const err = new Error("Forbidden");
-// 		err.status = 403;
-// 		throw err;
-// 	}
+	if (!session || !isValid) {
+		const err = new Error("Forbidden");
+		err.status = 403;
+		throw err;
+	}
 
-// 	ctx.data = {
-// 		session
-// 	};
+	const user = await UserService.findOneById(session.user_id)
 
-//     await next()
-// })
+	ctx.data = {
+		session,
+		user: user.toJSON()
+	};
 
-// server.route('/api/user', UserAPI)
-// server.route('/api/docs', DocsAPI)
-// server.route('/api/payment', PaymentAPI)
-// server.route('/webhook/payment', PaymentWebhook)
-// // server.route('/api/payment', PaymentApiController)
+    await next()
+})
 
-server.get('/websocket', async (ctx) => {
+server.route('/api/user', UserAPI)
+server.route('/api/docs', DocsAPI)
+server.route('/api/payment', PaymentAPI)
+server.route('/webhook/payment', PaymentWebhook)
+
+server.get('/api/ws/:uid', async (ctx) => {
     const upgradeHeader = ctx.req.header('Upgrade');
     // console.log(upgradeHeader)
 
@@ -126,8 +121,9 @@ server.get('/websocket', async (ctx) => {
         return new Response('Durable Object expected Upgrade: websocket', { status: 426 });
     }
 
+	const uid = ctx.req.param('uid')
 
-    let id = ctx.env.WEBSOCKET_MANAGER.idFromName("foo");
+    let id = ctx.env.WEBSOCKET_MANAGER.idFromName(uid);
     let stub = ctx.env.WEBSOCKET_MANAGER.get(id);
 
     return stub.fetch(ctx.req.raw);
