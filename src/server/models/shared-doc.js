@@ -4,6 +4,7 @@ import { z } from "zod"
 import SharedArray from "../../core/models/shared-array.js"
 import SD from "../../core/models/shared-doc.js"
 import { db } from "../services/db.js";
+import * as CryptoService from "../services/crypto.js";
 
 class SharedDoc extends SD {
     async save(){
@@ -28,10 +29,14 @@ class SharedDoc extends SD {
     }
 
     async buildAcl (keyPair) {
+        if(!this._prelim_acl){
+            return;
+        }
+
         try {
             const acl = this.members ?? false
             
-            let tmp = acl ? jwt.verify(acl, keyPair.publicKey, { algorithm: 'ES384' }).data : [];
+            let tmp = acl ? (await CryptoService.verify(keyPair, acl)).data : [];
             
             const _prelim_acl = this._prelim_acl.toJSON()
             const size = _prelim_acl.length
@@ -94,8 +99,7 @@ class SharedDoc extends SD {
                 action: z.string()
             })))
             
-            const new_acl = jwt.sign({data: tmp}, keyPair.privateKey, { algorithm: 'ES384' });
-
+            const new_acl = await CryptoService.sign(keyPair, {data: tmp});
 
             this.members = new_acl
         } catch (err) {

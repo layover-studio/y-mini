@@ -5,10 +5,11 @@ import { jwtDecode } from "jwt-decode";
 
 import SharedArray from "./shared-array.js"
 import SharedObject from "./shared-object.js"
+import { getDefaultCollection } from "../services/collection.js"
 
 class SharedDoc {
-    constructor({ collection }){        
-        this.collection = collection
+    constructor({ collection } = {}){        
+        this.collection = collection ?? getDefaultCollection()
 
         this.doc = new Y.Doc()
 

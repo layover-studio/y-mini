@@ -2,24 +2,24 @@ import { Hono } from 'hono'
 
 import * as SessionService from "../../services/session.js"
 import * as UserService from "../../services/user.js"
+import * as CryptoService from "../../services/crypto.js"
 // import * as DocsService from "../../services/docs.js"
 
 import SharedDoc from "../../models/shared-doc.js"
+import User from "../../models/user.js"
 
 const app = new Hono()
 
-app.get('/diff', async ctx => {
+app.post('/diff', async ctx => {
     const { docs } = await ctx.req.json()
 
-    const session = ctx.data.session 
-
-    const user = await UserService.findOneById(session.user_id)
+    const user = ctx.data.user
 
     const remote_docs = await SharedDoc.findByUser(user)
 
     return ctx.json({
         ok: true,
-        docs: remote_docs.filter(x => !docs.includes(x))
+        docs: docs && docs.length > 0 ? remote_docs.filter(x => !docs.includes(x)) : remote_docs
     })
 })
 
@@ -31,49 +31,35 @@ app.post('/:uid/update', async ctx => {
     // TODO: check user has access rights
     // verify jwt and is member
 
-    const session = ctx.data.session 
+    // const session = ctx.data.session 
 
-    const user = await UserService.findOneById(session.userId)
+    // const user = await UserService.findOneById(session.userId)
 
-    let doc = await SharedDoc.findOne({
-        type,
-        uuid: uid
-    })
+    let data = await SharedDoc.findOne(uid)
+    
+    const res = data.state
 
-    if(!doc) {
-        doc = new SharedDoc()
+    let doc = new SharedDoc()
 
+    if(!data) {
         await SharedDoc.create({
             type,
             uuid: uid,
             state: await doc.export()
         })
-
-    } 
-    
-    doc.import(state)
+    } else {
+        doc.import(Buffer.from(data.state))
+    }
 
     const keyPair = await CryptoService.getOneByDoc({ uuid: uid })
     
     await doc.buildAcl(keyPair)
     
-    const update = await doc.export()
+    doc.import(state)
     
-    await SharedDoc.update({
-        type,
-        uuid: uid,
-        state: update
-    }) 
-    
+    await doc.save()
 
-    // doc = await DocsService.findOne({
-    //     type,
-    //     uuid: uid
-    // })
-
-    // console.log(doc.toJSON())
-
-    return ctx.body(update, 200, {
+    return ctx.body(doc.export(), 200, {
         'Content-Type': 'application/octet-stream'
     })
 })

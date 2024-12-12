@@ -42,6 +42,17 @@ export function defineCollection(collection){
     return newCollection
 }
 
+export function getDefaultCollection(){
+    const schema = SharedDocSchema
+
+    return {
+        name: 'docs',
+        indexes: "++uuid",
+        schema,
+        props: parseKeys(schema)
+    }
+}
+
 export function reference(collectionName){
     return collections[collectionName].schema
 }
