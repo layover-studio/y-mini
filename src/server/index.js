@@ -13,13 +13,13 @@ import AuthController from './controllers/auth.js'
 
 import { setContext } from './context.js';
 
-import UserAPI from './src/controllers/api/user.js'
-import PaymentAPI from './src/controllers/api/payment.js'
-import PaymentWebhook from './src/controllers/webhook/payment.js'
-import DocsAPI from './src/controllers/api/docs.js'
+import UserAPI from './controllers/api/user.js'
+import PaymentAPI from './controllers/api/payment.js'
+import PaymentWebhook from './controllers/webhook/payment.js'
+import DocsAPI from './controllers/api/docs.js'
 
-import * as SessionService from './src/services/session.js'
-import * as UserService from './src/services/user.js'
+import * as SessionService from './services/session.js'
+import * as UserService from './services/user.js'
 
 const server = new Hono()
 
@@ -50,13 +50,13 @@ server.onError((err, ctx) => {
 	}, err.status || 500)
 })
 
-// server.use(cors({
-// 	origin: [
-// 		'https://devreel.app', 
-// 		'http://localhost:4321',
-// 	],
-// 	credentials: true
-// }))
+server.use(cors({
+	origin: [
+		'https://devreel.app', 
+		'http://localhost:4321',
+	],
+	credentials: true
+}))
 
 server.use(async (ctx, next) => {
     try {
@@ -81,7 +81,9 @@ server.use('/api/*', async (ctx, next) => {
 	
 	const hostHeader = ["devreel.com", "localhost:8787", "localhost:4321"];
 
-	if (!originHeader || !hostHeader || !hostHeader.includes(originHeader)) {
+	const host = (new URL(originHeader)).host
+
+	if (!host || !hostHeader || !hostHeader.includes(host)) {
 		return new Response(null, {
 			status: 403
 		});

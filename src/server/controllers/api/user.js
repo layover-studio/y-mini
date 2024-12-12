@@ -8,14 +8,14 @@ import * as CryptoService from "../../services/crypto.js"
 const app = new Hono()
 
 app.get('/', async ctx => {
-    const session = ctx.data.session 
+    const user = await UserService.findOneById(ctx.data.session.user_id)
 
-    const user = await UserService.findOneById(session.userId)
-
-    return ctx.json({
-        ok: true, 
-        user 
-    })
+    return ctx.body(
+        user.export(), 
+        200, {
+            'Content-Type': 'application/octet-stream'
+        }
+    )
 })
 
 app.get('/diff', async ctx => {

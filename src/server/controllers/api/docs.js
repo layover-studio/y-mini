@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 import * as SessionService from "../../services/session.js"
 import * as UserService from "../../services/user.js"
-import * as DocsService from "../../services/docs.js"
+// import * as DocsService from "../../services/docs.js"
 
 import SharedDoc from "../../models/shared-doc.js"
 

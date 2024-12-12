@@ -79,11 +79,7 @@ app.get('/login/github/callback', async ctx => {
 
 		const hasPaid = existingUser.hasPaid
 		
-		return ctx.redirect(hasPaid ? 
-			`http://localhost:4321/studio`
-			:
-			`http://localhost:4321/payment`
-		);
+		return ctx.redirect('http://localhost:4321/dashboard');
 	} catch (e) {
 		throw new Error(e.message)
 	}
