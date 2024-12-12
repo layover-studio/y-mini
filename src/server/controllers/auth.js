@@ -1,7 +1,6 @@
 import { Hono } from 'hono'
 import { getCookie, setCookie } from "hono/cookie";
 import { v4 as uuid } from "uuid";
-import jwt from "jsonwebtoken"
 
 import { generateState } from "arctic";
 import { github } from "../services/github.js";
@@ -56,12 +55,19 @@ app.get('/login/github/callback', async ctx => {
 		let existingUser = await UserService.findOneByGithubId(githubUser.id ?? null)
 			
 		if (!existingUser) {		
+			const uid = uuid()
+
+			const keyPair = await CryptoService.getOneByDoc({ uuid: uid })
+
+			const token = await CryptoService.sign(keyPair, { data: false })
+
 			existingUser = new User({
-				uuid: uuid(),
+				uuid: uid,
 				github_id: githubUser.id,
 				username: githubUser.login,
 				email: githubUser.email,
 				avatar_url: githubUser.avatar_url,
+				hasPaid: token
 			})
 
 			await existingUser.save()

@@ -19,6 +19,7 @@ class UserServer extends SharedDoc {
             this.github_id = args.github_id ?? ''
             this.username = args.username ?? ''
             this.avatar_url = args.avatar_url ?? ''
+            this.hasPaid = args.hasPaid ?? ''
         }
     }
 

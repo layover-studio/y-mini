@@ -7,6 +7,7 @@ import { setContext } from "../../src/server/context.js"
 // import "fake-indexeddb/auto";
 import cookie from "cookie"
 import jwt from "jsonwebtoken"
+import * as jose from 'jose'
 
 import * as SessionService from "../../src/server/services/session.js"
 import * as UserService from "../../src/server/services/user.js"
@@ -48,9 +49,9 @@ test("sign jwt", async () => {
         uuid: 'test'
     })
 
-    const token = jwt.sign({ foo: 'bar' }, keyPair.privateKey, { algorithm: 'ES384' });
+    const token = await CryptoService.sign(keyPair, { foo: 'bar' })
 
-    const decoded = jwt.verify(token, keyPair.publicKey, { algorithm: 'ES384' });
+    const decoded =  await CryptoService.verify(keyPair, token)
 
     assert(decoded.foo == 'bar')
 })

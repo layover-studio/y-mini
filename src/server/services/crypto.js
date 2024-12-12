@@ -1,64 +1,18 @@
-import crypto from 'node:crypto'
+import * as jose from 'jose'
 import { v4 as uuid } from "uuid"
 
 import db from "./db.js"
 
-export function generateKeyPair () {
-    return crypto.subtle.generateKey(
-        {
-          name: "ECDSA",
-          namedCurve: "P-384",
-        },
-        true,
-        ["sign", "verify"],
-      );
-}
-
-export function createTable () {
-    return db().prepare(`
-        CREATE TABLE IF NOT EXISTS 
-        keyPairs (
-            id INTEGER PRIMARY KEY, 
-            uuid VARCHAR(36) UNIQUE,
-            created_at BIGINT DEFAULT CURRENT_TIMESTAMP,
-            updated_at BIGINT DEFAULT CURRENT_TIMESTAMP,
-            doc VARCHAR(36),
-            publicKey TEXT,
-            privateKey TEXT
-        );
-    `)
-    .run()
-}
-
-function arrayBufferToBase64(arrayBuffer) {
-    const byteArray = new Uint8Array(arrayBuffer);
-    let byteString = '';
-    byteArray.forEach((byte) => {
-      byteString += String.fromCharCode(byte);
-    });
-    return btoa(byteString);
-  }
-  
-  function breakPemIntoMultipleLines(pem) {
-    const charsPerLine = 64;
-    let pemContents = '';
-    while (pem.length > 0) {
-      pemContents += `${pem.substring(0, charsPerLine)}\n`;
-      pem = pem.substring(64);
-    }
-    return pemContents;
-  }
-
-function toPem(key, type) {
-    const pemContents = breakPemIntoMultipleLines(arrayBufferToBase64(key));
-    return `-----BEGIN ${type.toUpperCase()} KEY-----\n${pemContents}-----END ${type.toUpperCase()} KEY-----`;
-  }
-
 export async function create (args) {
-    const keyPair = await generateKeyPair()
+  const { publicKey, privateKey } = await jose.generateKeyPair('ES384', {
+    extractable: true
+  })
+  
+  const spkiPem = await jose.exportSPKI(publicKey)
+  const pkcs8Pem = await jose.exportPKCS8(privateKey)
 
-    const publicKey = toPem(await crypto.subtle.exportKey("spki", keyPair.publicKey), 'public')
-    const privatekey = toPem(await crypto.subtle.exportKey("pkcs8", keyPair.privateKey), 'private')
+  // const publicKey = toPem(await crypto.subtle.exportKey("spki", keyPair.publicKey), 'public')
+  // const privatekey = toPem(await crypto.subtle.exportKey("pkcs8", keyPair.privateKey), 'private')
 
     // const id = await db().prepare(`SELECT id from user WHERE uuid = ? LIMIT 1`).bind(args.user.uuid).first('id') 
 
@@ -68,8 +22,8 @@ export async function create (args) {
 	`)
     .bind(
 		uuid(),
-		publicKey,
-		privatekey,
+		spkiPem,
+		pkcs8Pem,
 		args.doc.uuid
 	)
 	.run();
@@ -96,6 +50,35 @@ export async function getOneByDoc(doc) {
   }
 
   return kp
+}
+
+export async function sign(keyPair, data) {
+  const alg = 'ES384'
+
+  const privateKey = await jose.importPKCS8(keyPair.privateKey, alg)
+
+  const jwt = await new jose.SignJWT(data)
+  .setProtectedHeader({ alg })
+  .setIssuedAt()
+  .setIssuer('urn:example:issuer')
+  .setAudience('urn:example:audience')
+  .setExpirationTime('2h')
+  .sign(privateKey)
+
+  return jwt
+}
+
+export async function verify(keyPair, jwt) {
+  const alg = 'ES384'
+
+  const publicKey = await jose.importSPKI(keyPair.publicKey, alg)
+
+  const { payload, protectedHeader } = await jose.jwtVerify(jwt, publicKey, {
+    issuer: 'urn:example:issuer',
+    audience: 'urn:example:audience',
+  })
+
+  return payload
 }
 
 export async function remove (keyPair) {

@@ -30,10 +30,10 @@ app.get('/diff', async ctx => {
 })
 
 app.get('/public-key', async ctx => {
-    const session = ctx.data.session
+    const user = ctx.data.user
 
-    const keyPair = await CryptoService.findOneByUser({
-        id: session.userId
+    const keyPair = await CryptoService.findOneByDoc({
+        uuid: user.uuid
     })
 
     if(!keyPair) {

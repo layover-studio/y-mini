@@ -91,7 +91,20 @@ server.use('/api/*', async (ctx, next) => {
 	
 	const session_uuid = getCookie(ctx, "session")
 
+	if(!session_uuid) {
+		const err = new Error("Forbidden");
+		err.status = 403;
+		throw err;
+	}
+
 	const session = await SessionService.findOne(session_uuid);
+
+	if(!session) {
+		const err = new Error("Forbidden");
+		err.status = 403;
+		throw err;
+	}
+
 	const isValid = SessionService.check(session)
 
 	if (!session || !isValid) {
