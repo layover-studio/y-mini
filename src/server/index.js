@@ -50,13 +50,13 @@ server.onError((err, ctx) => {
 	}, err.status || 500)
 })
 
-server.use(cors({
-	origin: [
-		'https://devreel.app', 
-		'http://localhost:4321',
-	],
-	credentials: true
-}))
+// server.use(cors({
+// 	origin: [
+// 		'https://devreel.app', 
+// 		'http://localhost:4321',
+// 	],
+// 	credentials: true
+// }))
 
 server.use(async (ctx, next) => {
     try {
@@ -128,13 +128,40 @@ server.route('/api/docs', DocsAPI)
 server.route('/api/payment', PaymentAPI)
 server.route('/webhook/payment', PaymentWebhook)
 
-server.get('/api/ws/:uid', async (ctx) => {
+server.get('/ws/:uid', async (ctx) => {
     const upgradeHeader = ctx.req.header('Upgrade');
-    // console.log(upgradeHeader)
 
     if (!upgradeHeader || upgradeHeader !== 'websocket') {
         return new Response('Durable Object expected Upgrade: websocket', { status: 426 });
     }
+	
+	const session_uuid = getCookie(ctx, "session")
+
+	if(!session_uuid) {
+		const err = new Error("Forbidden");
+		err.status = 403;
+		throw err;
+	}
+
+	const session = await SessionService.findOne(session_uuid);
+
+	if(!session) {
+		const err = new Error("Forbidden");
+		err.status = 403;
+		throw err;
+	}
+
+	const isValid = SessionService.check(session)
+
+	if (!session || !isValid) {
+		const err = new Error("Forbidden");
+		err.status = 403;
+		throw err;
+	}
+
+	const user = await UserService.findOneById(session.user_id)
+
+	// check user has right to access doc
 
 	const uid = ctx.req.param('uid')
 
@@ -148,6 +175,8 @@ export class WebSocketServer extends DurableObject {
 	async fetch(request) {
 	  const webSocketPair = new WebSocketPair();
 	  const [client, server] = Object.values(webSocketPair);
+
+	  const uid = request.url.split('/').slice(-1)[0]
   
 	  this.ctx.acceptWebSocket(server);
   
