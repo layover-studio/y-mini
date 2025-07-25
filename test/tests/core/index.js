@@ -64,3 +64,10 @@ test('schema validation', () => {
 
     assert(!doc.isValid())
 })
+
+test('versioning', () => {
+    // create doc
+    // update
+    // get history
+    // assert the history is not empty
+})

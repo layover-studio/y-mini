@@ -1,14 +1,14 @@
 import test, { before, after } from 'node:test'
 import assert from 'node:assert'
 
-import { setup, destroy } from "../../utils-server.js"
-import { getCollection } from "../../../src/server/services/collection.js"
-import SharedDoc from '../../../src/server/models/shared-doc.js'
+import { setup, destroy } from "../../utils-client.js"
+import { getCollection } from "../../../src/client/services/collection.js"
+import SharedDoc from '../../../src/client/models/shared-doc.js'
 
 let doc = false
 
 before(async () => {
-    await setup()
+    // await setup()
 })
 
 test("save document on server", async () => {
@@ -38,5 +38,5 @@ test("delete document on server", async () => {
 })
 
 after(async () => {
-    await destroy()
+    // await destroy()
 })
