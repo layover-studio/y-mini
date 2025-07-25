@@ -172,22 +172,33 @@ server.get('/ws/:uid', async (ctx) => {
 })
 
 export class WebSocketServer extends DurableObject {
-	async fetch(request) {
-	  const webSocketPair = new WebSocketPair();
-	  const [client, server] = Object.values(webSocketPair);
+	// TODO: check how to handle multiple connections, state, and docs
+	// https://github.com/cloudflare/workers-chat-demo/blob/master/src/chat.mjs
 
-	  const uid = request.url.split('/').slice(-1)[0]
+	async fetch(request) {
+		const webSocketPair = new WebSocketPair();
+		const [client, server] = Object.values(webSocketPair);
+
+		const uid = request.url.split('/').slice(-1)[0]
   
-	  this.ctx.acceptWebSocket(server);
-  
-	  return new Response(null, {
-		status: 101,
-		webSocket: client,
-	  });
+		this.ctx.acceptWebSocket(server);
+	
+		return new Response(null, {
+			status: 101,
+			webSocket: client,
+		});
 	}
   
 	async webSocketMessage(ws, message) {
-	  ws.send('PONG');
+		//   ws.send('PONG');
+		
+		const update = message 
+		
+		// TODO: update local doc
+		
+		// TODO: return state
+		
+		ws.send(update)
 	}
   
 	async webSocketClose(ws, code, reason, wasClean) {

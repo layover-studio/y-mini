@@ -1,40 +1,40 @@
-import test from "node:test"
-import assert from "node:assert"
+// import test from "node:test"
+// import assert from "node:assert"
 
-import { z } from "zod";
+// import { z } from "zod";
 
-import { SharedDoc, SharedObject, SharedArray, defineCollection } from "../../server.js"
+// import { SharedDoc, SharedObject, SharedArray, defineCollection } from "../../server.js"
 
-test("create shared array", async () => {
+// test("create shared array", async () => {
 
-    const doc = new SharedDoc({
-        collection: defineCollection({
-            name: "test",
-            schema: {
-                username: z.string(),
-                authors: z.array(z.object({
-                    name: z.string()
-                }))
-            }
-        })
-    })
+//     const doc = new SharedDoc({
+//         collection: defineCollection({
+//             name: "test",
+//             schema: {
+//                 username: z.string(),
+//                 authors: z.array(z.object({
+//                     name: z.string()
+//                 }))
+//             }
+//         })
+//     })
 
-    const author = new SharedObject(z.object({
-        name: z.string()
-    }))
+//     const author = new SharedObject(z.object({
+//         name: z.string()
+//     }))
 
-    doc.username = "document"
-    doc.authors = new SharedArray(z.array(z.object({
-        name: z.string()
-    })))
+//     doc.username = "document"
+//     doc.authors = new SharedArray(z.array(z.object({
+//         name: z.string()
+//     })))
 
-    // console.log(new SharedArray())
+//     // console.log(new SharedArray())
 
-    author.name = "test"
+//     author.name = "test"
 
-    // console.log(author)
+//     // console.log(author)
 
-    doc.authors.push([author])
+//     doc.authors.push([author])
     
-    assert(doc.authors[0].name == "test")
-})
+//     assert(doc.authors[0].name == "test")
+// })

@@ -14,7 +14,7 @@
     "./server": "./server.js"
   },
   "scripts": {
-    "test": "node --test --env-file=.env",
+    "test": "node --test --env-file=.env ./test/tests/*",
     "clean": "rm -rf db"
   },
   "author": "",
@@ -31,6 +31,7 @@
     "lucia": "^3.2.2",
     "stripe": "^17.3.1",
     "throttle-debounce": "^5.0.0",
+    "typescript": "^5.8.3",
     "uuid": "^9.0.1",
     "ws": "^8.16.0",
     "yjs": "^13.6.14",

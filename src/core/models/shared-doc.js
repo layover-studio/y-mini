@@ -9,6 +9,7 @@ import { getDefaultCollection } from "../services/collection.js"
 
 class SharedDoc {
     constructor({ collection } = {}){        
+        // this.schema = schema ?? false
         this.collection = collection ?? getDefaultCollection()
 
         this.doc = new Y.Doc()
@@ -22,7 +23,13 @@ class SharedDoc {
 
         return new Proxy(this, {
             get: function(target, prop, receiver) {
-                if(target.collection.props.includes(prop)){
+                const p = [
+                    ...Object.getOwnPropertyNames(SharedDoc.prototype),
+                    ...Object.getOwnPropertyNames(target)
+                ]
+
+                // if(target.collection.props.includes(prop)){
+                if(!p.includes(prop)){
                     const res = target.doc.getMap("root").get(prop)
                     
                     if(res instanceof Y.Array){
@@ -39,8 +46,14 @@ class SharedDoc {
             set: function(target, prop, value, receiver) {
                 // console.log(target.properties, prop)
                 // console.log(target.collection)
+
+                const p = [
+                    ...Object.getOwnPropertyNames(SharedDoc.prototype),
+                    ...Object.getOwnPropertyNames(target)
+                ]
         
-                if(target.collection.props.includes(prop)){
+                // if(target.collection.props.includes(prop)){
+                if(!p.includes(prop)){
                     // if(target.schema) {
                     //     const { shape } = target.schema
 
@@ -70,6 +83,17 @@ class SharedDoc {
                 return Reflect.set(target, prop, value, receiver);
             }
         })
+    }
+
+    getAllProperties(){
+        return [
+            ...Object.getOwnPropertyNames(SharedDoc.prototype),
+            ...Object.getOwnPropertyNames(this)
+        ]
+    }
+
+    hello(){
+        console.log('hello')
     }
 
     export () {
@@ -128,7 +152,7 @@ class SharedDoc {
         return this.doc.getMap('root').toJSON()
     }
 
-    validate(){
+    isValid(){
         return this.collection.schema.safeParse(this.toJSON()).success
     }
 }

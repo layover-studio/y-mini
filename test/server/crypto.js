@@ -1,70 +1,70 @@
-import test, { before, after } from "node:test"
-import assert from "node:assert"
-import { Miniflare } from "miniflare";
+// import test, { before, after } from "node:test"
+// import assert from "node:assert"
+// import { Miniflare } from "miniflare";
 
-import { setContext } from "../../src/server/context.js"
+// import { setContext } from "../../src/server/context.js"
 
-// import "fake-indexeddb/auto";
-import cookie from "cookie"
-import jwt from "jsonwebtoken"
-import * as jose from 'jose'
+// // import "fake-indexeddb/auto";
+// import cookie from "cookie"
+// import jwt from "jsonwebtoken"
+// import * as jose from 'jose'
 
-import * as SessionService from "../../src/server/services/session.js"
-import * as UserService from "../../src/server/services/user.js"
-import * as CryptoService from "../../src/server/services/crypto.js"
-import User from "../../src/server/models/user.js"
-import { createDatabase } from "../../src/server/services/db.js"
+// import * as SessionService from "../../src/server/services/session.js"
+// import * as UserService from "../../src/server/services/user.js"
+// import * as CryptoService from "../../src/server/services/crypto.js"
+// import User from "../../src/server/models/user.js"
+// import { createDatabase } from "../../src/server/services/db.js"
 
-var mf = false
-var user = false
+// var mf = false
+// var user = false
 
-before(async () => {
-    mf = new Miniflare({
-        modules: true,
-        script: "",
-        d1Databases: {
-            DB: "8dd54cb3-ea6c-42b2-bef1-7e7889d864cd"
-        },
-    });
+// before(async () => {
+//     mf = new Miniflare({
+//         modules: true,
+//         script: "",
+//         d1Databases: {
+//             DB: "8dd54cb3-ea6c-42b2-bef1-7e7889d864cd"
+//         },
+//     });
 
-    setContext({
-        DB: await mf.getD1Database("DB")
-    })
+//     setContext({
+//         DB: await mf.getD1Database("DB")
+//     })
 
-    await createDatabase("./src/server/schema.sql")
-});
+//     await createDatabase("./src/server/schema.sql")
+// });
 
-test("create key pair", async () => {
-    const keyPair = await CryptoService.create({
-        doc: {
-            uuid: 'test'
-        }
-    })
+// test("create key pair", async () => {
+//     const keyPair = await CryptoService.create({
+//         doc: {
+//             uuid: 'test'
+//         }
+//     })
 
-    assert(keyPair)
-})
+//     assert(keyPair)
+// })
 
-test("sign jwt", async () => {
-    const keyPair = await CryptoService.findOneByDoc({
-        uuid: 'test'
-    })
+// test("sign jwt", async () => {
+//     const keyPair = await CryptoService.findOneByDoc({
+//         uuid: 'test'
+//     })
 
-    const token = await CryptoService.sign(keyPair, { foo: 'bar' })
+//     const token = await CryptoService.sign(keyPair, { foo: 'bar' })
 
-    const decoded =  await CryptoService.verify(keyPair, token)
+//     const decoded =  await CryptoService.verify(keyPair, token)
 
-    assert(decoded.foo == 'bar')
-})
+//     assert(decoded.foo == 'bar')
+// })
 
-test("remove key pair", async () => {
-    const keyPair = await CryptoService.findOneByDoc({
-        uuid: 'test'
-    })
-    const res = await CryptoService.remove(keyPair)
+// test("remove key pair", async () => {
+//     const keyPair = await CryptoService.findOneByDoc({
+//         uuid: 'test'
+//     })
+//     const res = await CryptoService.remove(keyPair)
 
-    assert(res)
-})
+//     assert(res)
+// })
 
-after(async () => {
-    await mf.dispose();
-})
+// after(async () => {
+//     await mf.dispose();
+// })

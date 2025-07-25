@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "strictNullChecks": true,
+      "allowJs": true,
+      "baseUrl": ".",
+      "paths": {
+        "@server/*": ["src/server/*"],
+        "@client/*": ["src/client/*"],
+        "@core/*": ["src/core/*"],
+        "@src/*": ["src/*"]
+      }
+    }
+}  
