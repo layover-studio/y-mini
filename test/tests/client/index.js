@@ -42,7 +42,7 @@ test("find document on client", async () => {
     
     doc2.import(res.state)
 
-    assert(doc2.title = "a title")
+    assert(doc2.title == "a title")
 })
 
 test("delete document on client", async () => {

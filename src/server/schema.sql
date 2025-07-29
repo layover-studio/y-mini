@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS docs (
     id INTEGER PRIMARY KEY,
     uuid VARCHAR(36) UNIQUE,
     type VARCHAR(36),
+    isDeleted BOOLEAN,
     state BLOB
 );
 

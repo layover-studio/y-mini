@@ -108,8 +108,10 @@ class SharedDoc extends SD {
         }
     }
 
-    remove(){
-        return SharedDoc.remove(this)
+    delete(){
+        this.isDeleted = 1
+
+        return this.save()
     }
 
     static async create (args) {
@@ -124,11 +126,12 @@ class SharedDoc extends SD {
     
         const res = await db()
         .prepare(`
-            INSERT INTO docs (uuid, type, state) VALUES (?, ?, ?)
+            INSERT INTO docs (uuid, type, isDeleted, state) VALUES (?, ?, ?, ?)
         `)
         .bind(
             args.uuid,
             args.type ?? 'NULL',
+            args.isDeleted ?? 0,
             args.state
         )
         .run();
@@ -147,6 +150,8 @@ class SharedDoc extends SD {
         if(!res){
             return false
         }
+
+        res.state = new Uint8Array(res.state)
     
         return res;
     }
@@ -187,10 +192,11 @@ class SharedDoc extends SD {
         
         return db()
         .prepare(`
-            UPDATE docs SET state = ? WHERE uuid = ?
+            UPDATE docs SET state = ?, isDeleted = ? WHERE uuid = ?
         `)
         .bind(
             args.state,
+            args.isDeleted,
             args.uuid
         )
         .run();
@@ -200,10 +206,20 @@ class SharedDoc extends SD {
         const res = await SharedDoc.findOne(g.uuid)
     
         if(res) {
-            return SharedDoc.update(g)
+            const data = await SharedDoc.update(g)
+
+            return {
+                ok: true,
+                ...data
+            }
         }
+
+        const data = await SharedDoc.create(g)
     
-        return SharedDoc.create(g)
+        return {
+            ok: true,
+            ...data
+        }
     }
     
     static remove (user) {

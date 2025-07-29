@@ -1,42 +1,55 @@
-// import test, { before, after } from 'node:test'
-// import assert from 'node:assert'
+import test, { before, after } from 'node:test'
+import assert from 'node:assert'
+import * as Y from "yjs"
 
-// import { setup, destroy } from "../../utils-server.js"
+import { setup, destroy } from "../../utils-server.js"
 // import { getCollection } from "../../../src/server/services/collection.js"
-// import SharedDoc from '../../../src/server/models/shared-doc.js'
+import SharedDoc from '../../../src/server/models/shared-doc.js'
 
-// let doc = false
+let doc = false
+let state = false
 
-// before(async () => {
-//     await setup()
-// })
+before(async () => {
+    await setup()
+})
 
-// test("save document on server", async () => {
-//     doc = new SharedDoc()
+test("save document on server", async () => {
+    doc = new SharedDoc()
 
-//     doc.title = "a title"
+    doc.uuid = "uuid"
+    doc.title = "a title"
 
-//     const res = await doc.save()
+    const res = await doc.save()
 
-//     assert(res.ok)
-// })
+    state = await doc.export()
 
-// test("find document on server", async () => {
-//     const res = await getCollection("default").findOne(doc.uuid)
+    assert(res.ok)
+})
 
-//     assert(res.title = "a title")
-// })
+test("find document on server", async () => {
+    const s = await SharedDoc.findOne(doc.uuid)
 
-// test("delete document on server", async () => {
-//     let res = await doc.delete()
+    const doc2 = new SharedDoc()
+    
+    doc2.import(s.state)
+    
+    assert(doc2.title == "a title")
+})
 
-//     assert(res.ok)
+test("delete document on server", async () => {
+    let res = await doc.delete()
 
-//     res = await getCollection("default").findOne(doc.uuid)
+    assert(res.ok)
 
-//     assert(res.isDeleted)
-// })
+    const state = await SharedDoc.findOne(doc.uuid)
 
-// after(async () => {
-//     await destroy()
-// })
+    const doc2 = new SharedDoc()
+    
+    doc2.import(state.state)
+    
+    assert(doc2.isDeleted)
+})
+
+after(async () => {
+    await destroy()
+})
