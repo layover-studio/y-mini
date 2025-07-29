@@ -23,3 +23,5 @@ export async function listDocs(){
 
     return res
 }
+
+export { defineCollection } from "../../core/services/collection.js"

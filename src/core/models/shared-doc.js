@@ -25,7 +25,8 @@ class SharedDoc {
             get: function(target, prop, receiver) {
                 const p = [
                     ...Object.getOwnPropertyNames(SharedDoc.prototype),
-                    ...Object.getOwnPropertyNames(target)
+                    ...Object.getOwnPropertyNames(target),
+                    ...Object.getOwnPropertyNames(Object.getPrototypeOf(target))
                 ]
 
                 // if(target.collection.props.includes(prop)){

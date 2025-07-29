@@ -1,6 +1,7 @@
 import test, { before, after } from 'node:test'
 import assert from 'node:assert'
 import * as z from "zod";
+import * as Y from 'yjs'
 
 import SharedDoc from '../../../src/core/models/shared-doc.js'
 import { defineCollection } from "../../../src/core/services/collection.js"
@@ -63,11 +64,4 @@ test('schema validation', () => {
     doc.title = 1
 
     assert(!doc.isValid())
-})
-
-test('versioning', () => {
-    // create doc
-    // update
-    // get history
-    // assert the history is not empty
 })

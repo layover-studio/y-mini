@@ -18,11 +18,10 @@
          1. [ ] user collection
    4. [ ] awareness
       1. [ ] how to implement awareness UI
-   5. [ ] versioning
-      1. [ ] time travel
-2. product poc using layback
-   1. auto subtitle (one week)
-   2. gitmage
+2. product poc using layback (one week)
+   1. fast editor
+   2. gitmage / gitjournal
+   3. auto subtitle 
 3. cloud infrastructure
    1. should be able to deploy in one command line (wrangler wrapper poc)
 4. layback launch

@@ -4,9 +4,9 @@ import { collections } from "../../core/services/collection.js"
 
 export let db_i = false 
 
-export function db(){
+export function createDatabase(){
     if(!db_i) {
-        db_i = new Dexie('devreel');
+        db_i = new Dexie('layback');
 
         let stores = {}
 
@@ -20,10 +20,14 @@ export function db(){
     return db_i
 }
 
-export async function clearDatabase(){
-  await db_i.delete()  
-
-  window.location.href = "/login"
+export function db(){
+    return db_i
 }
 
-export default db
+export function clearDatabase(){
+    if(db_i){
+        return db_i.delete()  
+    }
+
+    return false
+}

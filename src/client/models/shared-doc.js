@@ -4,7 +4,7 @@ import SD from "../../core/models/shared-doc.js"
 import { db } from "../services/db.js";
 
 class SharedDoc extends SD {
-    async save(){
+    save(){
         return SharedDoc.upsert(this)
     }
 
@@ -34,9 +34,9 @@ class SharedDoc extends SD {
         return tmp.filter(el => el.user == user.id && el.role == role).length > 0
     }
 
-    remove(){
-        return SharedDoc.remove(this)
-    }
+    // remove(){
+    //     return SharedDoc.remove(this)
+    // }
 
     // TODO: add to collection method
     // static async findOne(uid){
@@ -70,17 +70,28 @@ class SharedDoc extends SD {
             indexed_data[index] = data[index] 
         }
 
-        return db()[doc.collection.name].put({
+        const res = await db()[doc.collection.name].put({
             ...indexed_data,
             state: doc.export()
         }, doc.uuid)
+
+        return res ? { ok: true } : { ok: false }
+    }
+
+    async delete () {
+        // const res = await this.collection.where("uuid").equals(this.uuid).delete()
+        // return res > 0
+        this.isDeleted = true
+        await this.save()
+
+        return { ok: true }
     }
     
-    static remove (doc) {
-        // TODO: mark organization doc as deleted
+    // static remove (doc) {
+    //     // TODO: mark organization doc as deleted
     
-        return db()[doc.collection.name].delete(doc.uuid)
-    }
+    //     return db()[doc.collection.name].delete(doc.uuid)
+    // }
 }
 
 export default SharedDoc

@@ -1,8 +1,7 @@
 import { Miniflare } from "miniflare";
 
-import "fake-indexeddb/auto";
 import { setContext } from "../src/server/context.js"
-import { createDatabase, db } from "../src/server/services/db.js"
+import { createDatabase } from "../src/server/services/db.js"
 
 let mf = false 
 

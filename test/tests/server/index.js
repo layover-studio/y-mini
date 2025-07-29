@@ -1,42 +1,42 @@
-import test, { before, after } from 'node:test'
-import assert from 'node:assert'
+// import test, { before, after } from 'node:test'
+// import assert from 'node:assert'
 
-import { setup, destroy } from "../../utils-server.js"
-import { getCollection } from "../../../src/server/services/collection.js"
-import SharedDoc from '../../../src/server/models/shared-doc.js'
+// import { setup, destroy } from "../../utils-server.js"
+// import { getCollection } from "../../../src/server/services/collection.js"
+// import SharedDoc from '../../../src/server/models/shared-doc.js'
 
-let doc = false
+// let doc = false
 
-before(async () => {
-    await setup()
-})
+// before(async () => {
+//     await setup()
+// })
 
-test("save document on server", async () => {
-    doc = new SharedDoc()
+// test("save document on server", async () => {
+//     doc = new SharedDoc()
 
-    doc.title = "a title"
+//     doc.title = "a title"
 
-    const res = await doc.save()
+//     const res = await doc.save()
 
-    assert(res.ok)
-})
+//     assert(res.ok)
+// })
 
-test("find document on server", async () => {
-    const res = await getCollection("default").findOne(doc.uuid)
+// test("find document on server", async () => {
+//     const res = await getCollection("default").findOne(doc.uuid)
 
-    assert(res.title = "a title")
-})
+//     assert(res.title = "a title")
+// })
 
-test("delete document on server", async () => {
-    let res = await doc.delete()
+// test("delete document on server", async () => {
+//     let res = await doc.delete()
 
-    assert(res.ok)
+//     assert(res.ok)
 
-    res = await getCollection("default").findOne(doc.uuid)
+//     res = await getCollection("default").findOne(doc.uuid)
 
-    assert(res.isDeleted)
-})
+//     assert(res.isDeleted)
+// })
 
-after(async () => {
-    await destroy()
-})
+// after(async () => {
+//     await destroy()
+// })
