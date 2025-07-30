@@ -14,7 +14,7 @@
     "./server": "./server.js"
   },
   "scripts": {
-    "test": "node --test --env-file=.env ./test/tests/*",
+    "test": "node --test --env-file=.env ./test/tests/**/*.js",
     "clean": "rm -rf db"
   },
   "author": "",

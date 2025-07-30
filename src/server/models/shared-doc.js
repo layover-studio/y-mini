@@ -41,15 +41,15 @@ class SharedDoc extends SD {
             const _prelim_acl = this._prelim_acl.toJSON()
             const size = _prelim_acl.length
 
-            const doc_id = await db().prepare(`
-                SELECT id 
-                FROM docs
-                WHERE uuid = ? LIMIT 1;
-            `)
-            .bind(
-                this.uuid
-            )
-            .first('id')
+            // const doc_id = await db().prepare(`
+            //     SELECT id 
+            //     FROM docs
+            //     WHERE uuid = ? LIMIT 1;
+            // `)
+            // .bind(
+            //     this.uuid
+            // )
+            // .first('id')
             
             for(let i = 0 ; i < size ; i++){
                 const access_rule = _prelim_acl[i]
@@ -69,27 +69,29 @@ class SharedDoc extends SD {
                     }
                 // }
 
-                const user_id = await db().prepare(`
-                    SELECT u.id 
-                    FROM users AS u
-                    LEFT JOIN users_docs AS ud ON ud.user_id = u.id
-                    LEFT JOIN docs AS d ON d.id = ud.doc_id
-                    WHERE d.uuid = ? LIMIT 1;
-                `)
-                .bind(
-                    access_rule.user
-                )
-                .first('id')
+                // LINK USERS TO DOC
 
-                await db()
-                .prepare(`
-                    INSERT INTO users_docs (user_id, doc_id) VALUES (?, ?)
-                `)
-                .bind(
-                    user_id,
-                    doc_id
-                )
-                .run();
+                // const user_id = await db().prepare(`
+                //     SELECT u.id 
+                //     FROM users AS u
+                //     LEFT JOIN users_docs AS ud ON ud.user_id = u.id
+                //     LEFT JOIN docs AS d ON d.id = ud.doc_id
+                //     WHERE d.uuid = ? LIMIT 1;
+                // `)
+                // .bind(
+                //     access_rule.user
+                // )
+                // .first('id')
+
+                // await db()
+                // .prepare(`
+                //     INSERT INTO users_docs (user_id, doc_id) VALUES (?, ?)
+                // `)
+                // .bind(
+                //     user_id,
+                //     doc_id
+                // )
+                // .run();
             }
 
             

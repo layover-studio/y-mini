@@ -107,7 +107,7 @@ class SharedDoc {
         return true
     }
 
-    addMember (args) {
+    addUser (args) {
         if(!this._prelim_acl){
             this._prelim_acl = new SharedArray(z.array(z.object({
                 user: z.string(),
@@ -117,32 +117,67 @@ class SharedDoc {
         }
 
         this._prelim_acl.push([{ ...args, action: "add" }])
+
+        return true
     }
 
-    removeMember (user) {
-        if(!this._prelim_acl){
+    removeUser (uuid) {
+        let acl = this._prelim_acl
+
+        if(!acl){
             return true
         }
 
-        this._prelim_acl.push([{ user: user.uuid, action: "remove" }])
-    }
+        acl = acl.toJSON()
 
-    // hasRight(user, role){
-    //     if(!this.members){
-    //         return false
-    //     }
+        
+        const index = acl.findIndex(u => u.user == uuid && u.action == "add")
 
-    //     const acl = jwtDecode(this.members).data
+        if(index != -1) {
+            this._prelim_acl.delete(index, 1)
 
-    //     return acl.find(el => el.user == user.uuid && el.role == role)
-    // }
-
-    getMembers(){
-        if(!this.members){
-            return []
+            return true
         }
 
-        return jwtDecode(this.members).data
+        this._prelim_acl.push([{ user: uuid, action: "remove" }])
+        
+        return true
+    }
+
+    getUsers(){
+        let res = []
+
+        if(this.members){
+            res = [
+                ...res,
+                ...jwtDecode(this.members).data
+            ]
+        }
+
+        if(this._prelim_acl){
+            res = [
+                ...res,
+                ...this._prelim_acl.toJSON()
+                .filter(u => u.action == "add")
+                .map(u => ({
+                    user: u.user,
+                    role: u.role,
+                    isPending: true
+                }))
+            ]
+        }
+
+        return res
+    }
+
+    getUser(uuid){
+        const user = this.getUsers().filter(u => u.user == uuid)
+
+        if(user.length == 0) {
+            return false
+        }
+
+        return user[0]
     }
 
     transact(callback){
