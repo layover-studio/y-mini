@@ -60,8 +60,6 @@ test("server - generate access control list", async () => {
 
     await doc.buildAcl(keyPair)
 
-    const members = jwt.verify(doc.members, keyPair.publicKey, { algorithm: 'ES384' }).data
-
     const users = doc.getUsers()
     
     assert(users.length == 1 && !users[0].isPending)

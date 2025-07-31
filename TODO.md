@@ -1,7 +1,7 @@
 ## roadmap
 
 1. article pocs using clowdr (~ 2 weeks max)
-   1. [ ] collection
+   1. [ ] collection orm
       1. [ ] findby
       2. [ ] data validation
       3. [ ] unit testing
@@ -22,6 +22,17 @@
    1. fast editor
    2. gitmage / gitjournal
    3. auto subtitle 
-3. cloud infrastructure
+3. cli to generate code? like laravel's artisan
+4. layback framework
+   1. layback = yjs wrapper with better DX
+   2. need a layback framework that provides an opinionated way to do most web dev tasks, like nextjs vs react
+      1. crypto
+      2. auth
+      3. database
+      4. networking
+      5. dev overlay
+5. cloud infrastructure
    1. should be able to deploy in one command line (wrangler wrapper poc)
-4. layback launch
+6. launch
+
+it's more than speed, it's a new paradigm to build web apps for a more collaborative, inclusive world
