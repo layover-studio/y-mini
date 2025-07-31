@@ -1,10 +1,7 @@
-import test, { before, after } from 'node:test'
+import test from 'node:test'
 import assert from 'node:assert'
-import * as z from "zod";
-import * as Y from 'yjs'
 
-import SharedDoc from '../../../src/core/models/shared-doc.js'
-import { defineCollection } from "../../../src/core/services/collection.js"
+import SharedDoc from '../src/models/shared-doc.js'
 
 test('create new doc', () => {
     const doc = new SharedDoc()
@@ -43,25 +40,4 @@ test('extend doc class', () => {
     const doc = new CustomDoc()
     
     assert(doc.hello() == 'ok')
-})
-
-test('schema validation', () => {
-    const collection = defineCollection({
-        name: "test",
-        schema: {
-            title: z.string()
-        }
-    })
-
-    const doc = new SharedDoc({
-        collection
-    })
-
-    doc.title = "test"
-
-    assert(doc.isValid())
-
-    doc.title = 1
-
-    assert(!doc.isValid())
 })

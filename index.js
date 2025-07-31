@@ -1,6 +1,3 @@
-import SharedDoc from "./src/client/models/shared-doc.js"
-
-(() => {
-    const doc = new SharedDoc()
-    console.log(doc.save)
-})()
+export { default as SharedDoc } from "./src/models/shared-doc.js"
+export { default as SharedObject } from "./src/models/shared-object.js"
+export { default as SharedArray } from "./src/models/shared-array.js"

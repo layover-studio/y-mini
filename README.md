@@ -1,7 +1,7 @@
-# Build. Lay back. Relax.
+## todo
 
-## The yjs framework for distributed web development.
-
-## Install
-
-## Documentation
+- shared object tests
+- shared array tests
+- shared text tests
+- add more useful data structures
+  - list, stack, heap, binary tree

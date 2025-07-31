@@ -1,44 +1,15 @@
 {
   "name": "layback",
   "version": "0.0.0",
-  "description": "The web framework to launch fast and relax.",
-  "main": "./server.js",
-  "browser": "./client.js",
+  "description": "a minimalist yjs wrapper",
+  "main": "./index.js",
   "type": "module",
-  "exports": {
-    ".": {
-      "node": "./server.js",
-      "browser": "./client.js"
-    },
-    "./client": "./client.js",
-    "./server": "./server.js"
-  },
   "scripts": {
-    "test": "node --test --env-file=.env ./test/tests/**/*.js",
-    "clean": "rm -rf db"
+    "test": "node --test"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@hono/node-server": "^1.11.1",
-    "@lucia-auth/adapter-sqlite": "^3.0.2",
-    "arctic": "^2.3.0",
-    "dexie": "^4.0.10",
-    "hono": "^4.3.2",
-    "jose": "^5.9.6",
-    "jsonwebtoken": "^9.0.2",
-    "jwt-decode": "^4.0.0",
-    "lucia": "^3.2.2",
-    "stripe": "^17.3.1",
-    "throttle-debounce": "^5.0.0",
-    "typescript": "^5.8.3",
-    "uuid": "^9.0.1",
-    "ws": "^8.16.0",
-    "yjs": "^13.6.14",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "fake-indexeddb": "^6.0.0",
-    "miniflare": "^3.20241106.0"
+    "yjs": "^13.6.14"
   }
 }

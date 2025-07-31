@@ -2,17 +2,12 @@ import * as Y from 'yjs';
 
 import SharedObject from "./shared-object.js"
 
-import { parseKeys } from "../services/collection.js"
-
 class SharedArray {
-    constructor(schema){
+    constructor(){
         this.array = new Y.Array()
-        this.schema = schema
-        this.props = parseKeys(schema)
 
         return new Proxy(this, {
             get: function(target, prop, receiver) {
-                // console.log(prop.toString())
                 if(!isNaN(Number(prop.toString()))){
                     const res = target.array.get(prop)
                     
