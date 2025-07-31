@@ -8,22 +8,28 @@ class SharedObject {
 
         return new Proxy(this, {
             get: function(target, prop, receiver) {
-                if(target.props.includes(prop)){
-                    const res = target.object.get(prop)
+                // if(target.props.includes(prop)){
+                //     const res = target.object.get(prop)
                     
-                    if(res instanceof Y.Array){
-                        return SharedArray.from(res, target.schema.shape[prop])
-                    } else if(res instanceof Y.Map){
-                        return SharedObject.from(res, target.schema.shape[prop])
-                    }
+                //     if(res instanceof Y.Array){
+                //         return SharedArray.from(res, target.schema.shape[prop])
+                //     } else if(res instanceof Y.Map){
+                //         return SharedObject.from(res, target.schema.shape[prop])
+                //     }
         
-                    return res
-                }
+                //     return res
+                // }
 
                 return Reflect.get(target, prop, receiver);
             },
             set: function(target, prop, value, receiver) {
-                if(target.props.includes(prop)){
+                const p = [
+                    ...Object.getOwnPropertyNames(SharedObject.prototype),
+                    ...Object.getOwnPropertyNames(target),
+                    ...Object.getOwnPropertyNames(Object.getPrototypeOf(target))
+                ]
+                
+                if(!p.includes(prop)){
                     if(value instanceof SharedArray){
                         target.object.set(prop, value.array)
                         return true
@@ -43,8 +49,8 @@ class SharedObject {
         })
     }
 
-    static from (ymap, schema) {
-        const res = new SharedObject(schema)
+    static from (ymap) {
+        const res = new SharedObject()
 
         res.object = ymap 
 

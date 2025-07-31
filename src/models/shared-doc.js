@@ -19,9 +19,9 @@ class SharedDoc {
                     const res = target.doc.getMap("root").get(prop)
                     
                     if(res instanceof Y.Array){
-                        return SharedArray.from(res, target.collection.schema.shape[prop])
+                        return SharedArray.from(res)
                     } else if(res instanceof Y.Map){
-                        return SharedObject.from(res, target.collection.schema.shape[prop])
+                        return SharedObject.from(res)
                     }
         
                     return res

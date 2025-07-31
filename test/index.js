@@ -12,6 +12,11 @@ test('create new doc', () => {
 
     assert(doc.title === title)
     assert(doc.title === doc.doc.getMap('root').get('title'))
+
+    doc.title = "modified"
+
+    assert(doc.title === "modified")
+    assert(doc.title === doc.doc.getMap('root').get('title'))
 })
 
 test('manual sync', () => {
