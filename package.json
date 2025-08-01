@@ -1,6 +1,6 @@
 {
-  "name": "yz",
-  "version": "0.0.0",
+  "name": "ytiny",
+  "version": "0.0.1",
   "description": "a minimalist yjs wrapper",
   "main": "./index.js",
   "type": "module",
@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "npm-name-cli": "^5.0.0",
     "yjs": "^13.6.14"
   }
 }
