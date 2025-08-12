@@ -1,5 +1,5 @@
 {
-  "name": "ytiny",
+  "name": "y-tiny",
   "version": "0.0.1",
   "description": "a minimalist yjs wrapper",
   "main": "./index.js",
